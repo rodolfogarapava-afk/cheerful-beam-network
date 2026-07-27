@@ -196,26 +196,13 @@ function Home() {
     }];
   });
   const sectionCopy: Record<string, { title: string; description: string }> = {
-    Lanches: {
-      title: "Lanches",
-      description:
-        "Mais fininhos, crocantes por fora, suculentos por dentro — com opção simples ou dupla.",
-    },
-    Vinhos: {
-      title: "Vinhos",
-      description: "Rótulos escolhidos para harmonizar com os sabores marcantes da casa.",
-    },
-    Entradas: {
-      title: "Entradas",
-      description: "Porções crocantes e saborosas para começar ou compartilhar.",
-    },
-    Saladas: {
-      title: "Saladas",
-      description: "Combinações leves, frescas e preparadas na hora.",
-    },
     Espetinhos: {
       title: "Espetinhos",
-      description: "Sabores preparados na brasa e servidos no ponto escolhido.",
+      description: "Preparados na brasa e servidos no ponto escolhido. Acompanham farofa e mandioca.",
+    },
+    Acompanhamentos: {
+      title: "Acompanhamentos",
+      description: "Porções para incrementar o seu pedido.",
     },
     Bebidas: {
       title: "Bebidas",
