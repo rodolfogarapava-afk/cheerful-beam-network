@@ -586,3 +586,104 @@ button { cursor:pointer;touch-action:manipulation; }
 .stock-modal footer button{padding:9px 16px;border-radius:8px;border:1px solid #2a2a2a;background:#141414;color:#ddd;font-weight:600;font-size:13px;cursor:pointer}
 .stock-modal footer button.primary{background:#f5c518;border-color:#f5c518;color:#0a0a0a}
 .stock-modal footer button.primary:disabled{opacity:.4;cursor:not-allowed}
+
+/* ===== Mobile UX polish: larger tap targets & readable text ===== */
+@media (max-width: 640px) {
+  /* Universal minimum tap target on all clickable controls */
+  button, [role="button"], .primary, .ghost-btn, .primary-btn, .danger-btn,
+  .add-button, .stock-add-btn, select {
+    min-height: 44px;
+  }
+  /* Text a bit larger on primary/secondary action buttons */
+  .primary-btn, .ghost-btn, .danger-btn { font-size: 13px; padding: 12px 16px; }
+  .primary, .add-button { font-size: 13px; padding: 0 20px; min-height: 48px; }
+
+  /* Section headings — action button (like "0 alertas", "EXPORTAR CSV") */
+  .integrated-heading > button,
+  .integrated-heading > b { padding: 12px 16px; font-size: 12px; min-height: 44px; display:inline-flex; align-items:center; }
+
+  /* Category chips (menu and reports period filter) larger */
+  .category-strip button { min-height: 48px; font-size: 13px; padding: 0 20px; }
+  .catalog-chips .chip { min-height: 40px; padding: 10px 16px; font-size: 12px; }
+
+  /* Report period chips */
+  .report-view .period-chips button,
+  .period-chips button { min-height: 42px; font-size: 12px; padding: 10px 16px; }
+
+  /* Catalog toolbar buttons stretch nicely and are bigger */
+  .catalog-search { padding: 12px 14px; }
+  .catalog-search input { font-size: 14px; }
+  .catalog-actions .primary-btn,
+  .catalog-actions .ghost-btn { min-height: 46px; font-size: 13px; }
+
+  /* Stock toolbar */
+  .stock-toolbar { gap: 8px; }
+  .stock-search { padding: 12px 14px; min-width: 0; width: 100%; }
+  .stock-search input { font-size: 14px; }
+  .stock-filter { padding: 12px 14px; font-size: 12px; min-height: 44px; }
+  .stock-add-btn { min-height: 44px; padding: 10px 16px; font-size: 13px; }
+
+  /* Stock drawer header taps */
+  .stock-drawer > summary { padding: 16px 14px; }
+  .stock-drawer .drawer-title { font-size: 15px; }
+  .drawer-add { width: 36px; height: 36px; }
+
+  /* Stock counter — thumb friendly */
+  .stock-counter button { width: 40px; height: 40px; }
+  .stock-counter input { height: 40px; width: 64px; font-size: 17px; }
+  .stock-quick button { min-height: 40px; padding: 8px 14px; font-size: 12px; }
+  .stock-switch { width: 46px; height: 26px; }
+  .stock-switch span::before { width: 20px; height: 20px; }
+  .stock-switch input:checked + span::before { transform: translateX(20px); }
+
+  /* Cart / floating cart button */
+  .floating-cart { padding: 14px 16px; }
+  .floating-cart button { min-height: 48px; font-size: 13px; }
+
+  /* Cart lines quantity steppers */
+  .stepper button { width: 40px; height: 40px; font-size: 16px; }
+  .stepper span { min-width: 32px; font-size: 15px; }
+
+  /* Nav / hamburger sidebar buttons */
+  .nav-list button { min-height: 68px; font-size: 13px; }
+
+  /* Header icon buttons */
+  .top-actions .action, .top-actions .commands-trigger { width: 46px; height: 46px; }
+  .mobile-menu { min-height: 46px; min-width: 46px; }
+
+  /* Modal actions */
+  .modal button, .doneness-options button, .doneness-actions button,
+  .confirmation-actions button, .payment-methods button { min-height: 48px; font-size: 13px; }
+
+  /* Form fields comfy on mobile */
+  input, select, textarea { font-size: 16px; } /* prevents iOS zoom */
+  .field input, .field select, .field textarea { padding: 13px 14px; font-size: 15px; }
+  .cat-new input { padding: 13px 14px; font-size: 15px; }
+
+  /* Drawer for catalog edit — comfortable */
+  .drawer-head { padding: 20px 18px 12px; }
+  .drawer-body { padding: 16px 18px; gap: 14px; }
+  .drawer-foot { padding: 14px 18px calc(14px + env(safe-area-inset-bottom, 0px)); }
+  .drawer-close { width: 42px; height: 42px; }
+  .drawer-foot button { flex: 1; min-height: 48px; }
+  .drawer-foot .danger-btn { flex: 0 0 auto; }
+
+  /* Cash view rows a bit chunkier */
+  .cash-summary article, .report-summary article { padding: 16px; }
+  .cash-summary strong, .report-summary strong { font-size: 20px; }
+
+  /* Command cards */
+  .integrated-command-grid footer button { flex: 1; min-width: 0; min-height: 46px; font-size: 12px; }
+
+  /* Stock modal footer buttons */
+  .stock-modal footer button { min-height: 46px; padding: 12px 18px; font-size: 14px; }
+  .stock-modal-body input, .stock-modal-body select { padding: 13px 14px; font-size: 15px; }
+}
+
+@media (max-width: 400px) {
+  .catalog-grid { grid-template-columns: repeat(2, 1fr); }
+  .stock-summary { gap: 6px; }
+  .stock-summary article { padding: 10px 12px; }
+  .stock-summary strong { font-size: 16px; }
+  .integrated-heading h1 { font-size: 22px; }
+}
