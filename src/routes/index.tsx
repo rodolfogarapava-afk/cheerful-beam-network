@@ -463,7 +463,7 @@ function Home() {
                     </label>
                     <div className="cart-total"><span>Total</span><strong>R$ {total.toFixed(2).replace(".", ",")}</strong></div>
                     <div className="cart-actions">
-                      <button disabled={!customerName.trim()} onClick={() => {
+                      <button className="primary" disabled={!customerName.trim()} onClick={() => {
                         const name=customerName.trim();
                         const newItems=currentCartItems.map((item)=>({...item,delivered:false}));
                         setSavedCommands((current)=>mergeOpenCommands([...current,{id:Date.now(),name,count,total,createdAt:Date.now(),items:newItems}]));
@@ -471,7 +471,6 @@ function Home() {
                         playNotificationSound("sale");
                         setCart({}); setCartDetails({}); setModal("commands");
                       }}>SALVAR COMANDA</button>
-                      <button className="primary" disabled={!customerName.trim()} onClick={() => { setPaymentTotal(total); setPaymentItems(currentCartItems); setPaymentCommandId(null); setPaymentCommandBackup(null); setModal("payment"); }}>COBRAR / FINALIZAR</button>
                     </div>
                   </>
                 }
