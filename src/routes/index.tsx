@@ -54,10 +54,8 @@ type Product = {
 };
 
 const stockFallbackImages:Record<string,string>={
-  Entradas:"https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=600&q=82",
-  Saladas:"https://images.unsplash.com/photo-1546793665-c74683f339c1?auto=format&fit=crop&w=600&q=82",
-  Lanches:"https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=82",
   Espetinhos:"https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&w=600&q=82",
+  Acompanhamentos:"https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=600&q=82",
   Bebidas:"https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=600&q=82",
 };
 
