@@ -869,13 +869,32 @@ function IntegratedProducts({products,categories,onChange,onAddCategory,onRename
 function IntegratedStock({products,onChange}:{products:Product[];onChange:(products:Product[])=>void}) {
   const [query,setQuery]=useState("");
   const [onlyLow,setOnlyLow]=useState(false);
+  const [newProductFor,setNewProductFor]=useState<string|null>(null);
+  const [newCategory,setNewCategory]=useState(false);
+  const [catName,setCatName]=useState("");
+  const [draft,setDraft]=useState({name:"",price:"",stock:"0",minStock:"5",trackStock:true});
   const tracked=products.filter((p)=>p.trackStock);
   const low=tracked.filter((p)=>(p.stock||0)<=(p.minStock||0));
   const totalUnits=tracked.reduce((sum,p)=>sum+Number(p.stock||0),0);
+  const categories=Array.from(new Set(products.map((p)=>p.category)));
 
   const setStock=(id:number,value:number)=>onChange(products.map((p)=>p.id===id?{...p,stock:Math.max(0,Math.floor(value)||0)}:p));
   const setMin=(id:number,value:number)=>onChange(products.map((p)=>p.id===id?{...p,minStock:Math.max(0,Math.floor(value)||0)}:p));
   const toggleTrack=(id:number,on:boolean)=>onChange(products.map((p)=>p.id===id?{...p,trackStock:on,stock:p.stock||0,minStock:p.minStock||0}:p));
+
+  const openNewProduct=(cat:string|"")=>{setDraft({name:"",price:"",stock:"0",minStock:"5",trackStock:true});setNewProductFor(cat||categories[0]||"");};
+  const saveNewProduct=()=>{
+    const name=draft.name.trim(); if(!name||!newProductFor) return;
+    const nextId=(products.reduce((m,p)=>Math.max(m,p.id),0)||0)+1;
+    onChange([...products,{id:nextId,category:newProductFor,name,price:Number(draft.price)||0,image:"",description:"",trackStock:draft.trackStock,stock:Number(draft.stock)||0,minStock:Number(draft.minStock)||0}]);
+    setNewProductFor(null);
+  };
+  const saveNewCategory=()=>{
+    const name=catName.trim(); if(!name||categories.includes(name)) {setNewCategory(false);setCatName("");return;}
+    const nextId=(products.reduce((m,p)=>Math.max(m,p.id),0)||0)+1;
+    onChange([...products,{id:nextId,category:name,name:`Novo item · ${name}`,price:0,image:"",description:"",trackStock:true,stock:0,minStock:5}]);
+    setNewCategory(false);setCatName("");
+  };
 
   const visible=products
     .filter((p)=>p.name.toLowerCase().includes(query.trim().toLowerCase())||p.category.toLowerCase().includes(query.trim().toLowerCase()))
@@ -897,20 +916,22 @@ function IntegratedStock({products,onChange}:{products:Product[];onChange:(produ
     <div className="stock-toolbar">
       <div className="stock-search"><Search size={15}/><input placeholder="Buscar produto ou categoria" value={query} onChange={(e)=>setQuery(e.target.value)}/></div>
       <label className="stock-filter"><input type="checkbox" checked={onlyLow} onChange={(e)=>setOnlyLow(e.target.checked)}/> Apenas estoque baixo</label>
+      <button className="stock-add-btn" onClick={()=>setNewCategory(true)}><Plus size={14}/> Categoria</button>
+      <button className="stock-add-btn primary" onClick={()=>openNewProduct("")}><Plus size={14}/> Produto</button>
     </div>
 
     {(() => {
-      const categories = Array.from(new Set(products.map((p)=>p.category)));
       const grouped = categories.map((cat)=>({cat,items:visible.filter((p)=>p.category===cat)})).filter((g)=>g.items.length);
       if(!grouped.length) return <div className="integrated-empty"><Store/><h3>Nenhum produto encontrado</h3><p>Ajuste a busca ou desmarque o filtro.</p></div>;
       return <div className="stock-groups">{grouped.map(({cat,items})=>{
         const catLow=items.filter((p)=>p.trackStock&&(p.stock||0)<=(p.minStock||0)).length;
-        return <details key={cat} className="stock-drawer" open>
+        return <details key={cat} className="stock-drawer">
           <summary>
             <span className="drawer-caret"><ChevronDown size={16}/></span>
             <span className="drawer-title">{cat}</span>
             <span className="drawer-count">{items.length} {items.length===1?"item":"itens"}</span>
             {catLow>0 && <span className="drawer-alert">{catLow} alerta{catLow===1?"":"s"}</span>}
+            <button className="drawer-add" onClick={(e)=>{e.preventDefault();openNewProduct(cat);}} title="Adicionar produto"><Plus size={14}/></button>
           </summary>
           <div className="stock-simple">
             {items.map((product)=>{
@@ -948,6 +969,34 @@ function IntegratedStock({products,onChange}:{products:Product[];onChange:(produ
         </details>;
       })}</div>;
     })()}
+
+    {newProductFor!==null && <div className="modal-overlay" onClick={()=>setNewProductFor(null)}>
+      <div className="modal stock-modal" onClick={(e)=>e.stopPropagation()}>
+        <header><h3>Novo produto</h3><button onClick={()=>setNewProductFor(null)}>×</button></header>
+        <div className="stock-modal-body">
+          <label>Categoria<select value={newProductFor} onChange={(e)=>setNewProductFor(e.target.value)}>{categories.map((c)=><option key={c} value={c}>{c}</option>)}</select></label>
+          <label>Nome<input autoFocus value={draft.name} onChange={(e)=>setDraft({...draft,name:e.target.value})} placeholder="Ex: Espetinho de coração"/></label>
+          <div className="stock-modal-row">
+            <label>Preço (R$)<input type="number" step="0.01" min={0} value={draft.price} onChange={(e)=>setDraft({...draft,price:e.target.value})}/></label>
+            <label>Estoque<input type="number" min={0} value={draft.stock} onChange={(e)=>setDraft({...draft,stock:e.target.value})}/></label>
+            <label>Mínimo<input type="number" min={0} value={draft.minStock} onChange={(e)=>setDraft({...draft,minStock:e.target.value})}/></label>
+          </div>
+          <label className="inline-check"><input type="checkbox" checked={draft.trackStock} onChange={(e)=>setDraft({...draft,trackStock:e.target.checked})}/> Controlar estoque deste produto</label>
+        </div>
+        <footer><button onClick={()=>setNewProductFor(null)}>Cancelar</button><button className="primary" disabled={!draft.name.trim()} onClick={saveNewProduct}>Salvar produto</button></footer>
+      </div>
+    </div>}
+
+    {newCategory && <div className="modal-overlay" onClick={()=>setNewCategory(false)}>
+      <div className="modal stock-modal" onClick={(e)=>e.stopPropagation()}>
+        <header><h3>Nova categoria</h3><button onClick={()=>setNewCategory(false)}>×</button></header>
+        <div className="stock-modal-body">
+          <label>Nome da categoria<input autoFocus value={catName} onChange={(e)=>setCatName(e.target.value)} placeholder="Ex: Sobremesas"/></label>
+          <p className="stock-modal-hint">Um produto inicial em branco será criado nessa categoria — edite ou adicione mais depois.</p>
+        </div>
+        <footer><button onClick={()=>setNewCategory(false)}>Cancelar</button><button className="primary" disabled={!catName.trim()} onClick={saveNewCategory}>Criar categoria</button></footer>
+      </div>
+    </div>}
   </div>;
 }
 
