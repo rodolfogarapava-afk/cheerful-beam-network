@@ -31,7 +31,7 @@ export const Route = createFileRoute("/")({
       { title: "Burguer House — Cardápio digital" },
       { name: "description", content: "Cardápio digital da Burguer House com comandas, PDV, controle de estoque, caixa e relatórios." },
       { property: "og:title", content: "Burguer House — Cardápio digital" },
-      { property: "og:description", content: "Cardápio digital com gestão de comandas, PDV e relatórios." },
+      { property: "og:description", content: "Cardápio digital da Burguer House com comandas, PDV, controle de estoque, caixa e relatórios." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

@@ -77,6 +77,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { title: "Burguer House — Cardápio digital" },
+      { property: "og:title", content: "Burguer House — Cardápio digital" },
+      { name: "twitter:title", content: "Burguer House — Cardápio digital" },
+      { name: "description", content: "Cardápio digital da Burguer House com comandas, PDV, controle de estoque, caixa e relatórios." },
+      { property: "og:description", content: "Cardápio digital da Burguer House com comandas, PDV, controle de estoque, caixa e relatórios." },
+      { name: "twitter:description", content: "Cardápio digital da Burguer House com comandas, PDV, controle de estoque, caixa e relatórios." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/2cd366f2-b498-48c8-8593-1b6a904d3716/id-preview-914745d2--329923be-f3f2-4a1f-9770-88c17b5e9680.lovable.app-1785180851983.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/2cd366f2-b498-48c8-8593-1b6a904d3716/id-preview-914745d2--329923be-f3f2-4a1f-9770-88c17b5e9680.lovable.app-1785180851983.png" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:type", content: "website" },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
