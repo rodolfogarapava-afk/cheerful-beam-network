@@ -527,8 +527,7 @@ function Home() {
                   const sale={id:Date.now(),name:customerName,total:paymentTotal,method:paymentMethod,createdAt:Date.now(),items:paymentItems};
                   setSalesHistory((all)=>[...all,sale]);
                   if(paymentCommandId!==null)setSavedCommands((all)=>all.filter((command)=>command.id!==paymentCommandId));
-                  const updated=products.map((product)=>{const sold=paymentItems.find((item)=>item.name===product.name);return sold&&product.trackStock?{...product,stock:Math.max(0,Number(product.stock||0)-sold.qty)}:product});
-                  persistProducts(updated); printCustomerReceipt(sale); playNotificationSound("success"); setCart({}); setCartDetails({}); setCashReceived(""); setPaymentCommandId(null); setPaymentCommandBackup(null); setSent(true); setModal(null);
+                  printCustomerReceipt(sale); playNotificationSound("success"); setCart({}); setCartDetails({}); setCashReceived(""); setPaymentCommandId(null); setPaymentCommandBackup(null); setSent(true); setModal(null);
                 }}>CONFIRMAR PAGAMENTO E IMPRIMIR</button>
               </>
             )}
