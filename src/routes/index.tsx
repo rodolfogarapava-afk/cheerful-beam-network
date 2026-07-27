@@ -1029,14 +1029,65 @@ function IntegratedCash({sales,expenses,onAddExpense}:{sales:IntegratedSale[];ex
 }
 
 function IntegratedReports({sales,expenses,commands}:{sales:IntegratedSale[];expenses:IntegratedExpense[];commands:IntegratedCommand[]}) {
-  const revenue=sales.reduce((s,x)=>s+x.total,0), costs=expenses.reduce((s,x)=>s+x.amount,0);
+  const brl=(v:number)=>`R$ ${v.toFixed(2).replace(".",",")}`;
+  const startOfToday=new Date();startOfToday.setHours(0,0,0,0);
+  const todayMs=startOfToday.getTime();
+  const isToday=(ts:number)=>ts>=todayMs;
+  const todaySales=sales.filter((s)=>isToday(s.createdAt));
+  const todayExpenses=expenses.filter((e)=>isToday(e.createdAt));
+  const revenue=todaySales.reduce((s,x)=>s+x.total,0);
+  const costs=todayExpenses.reduce((s,x)=>s+x.amount,0);
+  const profit=revenue-costs;
+
+  const methodKeys=["Dinheiro","PIX","Cartão Crédito","Cartão Débito"] as const;
+  const byMethod=Object.fromEntries(methodKeys.map((m)=>[m,{total:0,count:0}])) as Record<string,{total:number;count:number}>;
+  todaySales.forEach((s)=>{const key=methodKeys.includes(s.method as typeof methodKeys[number])?s.method:"Dinheiro";byMethod[key].total+=s.total;byMethod[key].count+=1});
+
   const grouped=new Map<string,{qty:number;revenue:number}>();
-  sales.flatMap((s)=>s.items).forEach((i)=>{const old=grouped.get(i.name)||{qty:0,revenue:0};grouped.set(i.name,{qty:old.qty+i.qty,revenue:old.revenue+i.qty*i.price})});
-  const ranking=Array.from(grouped.entries()).sort((a,b)=>b[1].revenue-a[1].revenue).slice(0,5);
-  return <div className="integrated-view"><div className="integrated-heading"><div><p>ANÁLISE · MÊS ATUAL</p><h1>Relatórios</h1><span>Desempenho comercial, produtos e comandas pendentes.</span></div><button onClick={()=>generateReportPdf({periodLabel:"Histórico completo",sales,expenses,pendingCommands:commands.length})}>IMPRIMIR RELATÓRIO</button></div>
-    <div className="cash-summary report-summary"><article><small>Receita</small><strong>R$ {revenue.toFixed(2).replace(".",",")}</strong></article><article><small>Lucro</small><strong>R$ {(revenue-costs).toFixed(2).replace(".",",")}</strong></article><article><small>Pedidos</small><strong>{sales.length}</strong></article><article><small>Pendentes</small><strong>{commands.length}</strong></article></div>
-    <div className="finance-panels reports-panels"><section><h3>Top produtos</h3>{ranking.length?ranking.map(([name,data],i)=><div className="rank-row" key={name}><b>{i+1}</b><span>{name}<i style={{width:`${Math.max(16,(data.revenue/(ranking[0]?.[1].revenue||1))*100)}%`}}/></span><strong>{data.qty} un.</strong></div>):<p>Finalize vendas para gerar o ranking.</p>}</section>
-    <section><h3>Resumo operacional</h3><div className="report-metric"><span>Ticket médio</span><b>R$ {(sales.length?revenue/sales.length:0).toFixed(2).replace(".",",")}</b></div><div className="report-metric"><span>Margem</span><b>{revenue?(((revenue-costs)/revenue)*100).toFixed(1):"0"}%</b></div><div className="report-metric"><span>Itens vendidos</span><b>{sales.flatMap((s)=>s.items).reduce((n,i)=>n+i.qty,0)}</b></div></section></div>
+  todaySales.flatMap((s)=>s.items).forEach((i)=>{const old=grouped.get(i.name)||{qty:0,revenue:0};grouped.set(i.name,{qty:old.qty+i.qty,revenue:old.revenue+i.qty*i.price})});
+  const ranking=Array.from(grouped.entries()).sort((a,b)=>b[1].qty-a[1].qty);
+  const topRevenue=ranking[0]?.[1].qty||1;
+
+  const timeFmt=(ts:number)=>new Date(ts).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+
+  return <div className="integrated-view">
+    <div className="integrated-heading">
+      <div><p>ANÁLISE · HOJE</p><h1>Relatórios</h1><span>Recebimentos por forma de pagamento, vendas e custos do dia.</span></div>
+      <button onClick={()=>generateReportPdf({periodLabel:`Diário ${new Date().toLocaleDateString("pt-BR")}`,sales:todaySales,expenses:todayExpenses,pendingCommands:commands.length})}>IMPRIMIR RELATÓRIO</button>
+    </div>
+
+    <div className="method-summary">
+      {methodKeys.map((m)=><article key={m}><small>{m}</small><strong>{brl(byMethod[m].total)}</strong><span>{byMethod[m].count} {byMethod[m].count===1?"venda":"vendas"}</span></article>)}
+    </div>
+
+    <div className="cash-summary report-summary">
+      <article><small>Entradas</small><strong>{brl(revenue)}</strong></article>
+      <article><small>Saídas</small><strong className="red">{brl(costs)}</strong></article>
+      <article><small>Lucro</small><strong>{brl(profit)}</strong></article>
+      <article><small>Vendas</small><strong>{todaySales.length}</strong></article>
+    </div>
+
+    <div className="finance-panels reports-panels">
+      <section>
+        <h3>Produtos mais vendidos hoje</h3>
+        {ranking.length?ranking.map(([name,data],i)=><div className="rank-row" key={name}><b>{i+1}</b><span>{name}<i style={{width:`${Math.max(16,(data.qty/topRevenue)*100)}%`}}/></span><strong>{data.qty} un.</strong></div>):<p>Nenhuma venda hoje.</p>}
+      </section>
+      <section>
+        <h3>Vendas de hoje</h3>
+        {todaySales.length?todaySales.slice().reverse().map((s)=><div className="finance-row" key={s.id}><span>{s.name}<small>{timeFmt(s.createdAt)} · {s.method}</small></span><b>{brl(s.total)}</b></div>):<p>Nenhuma venda registrada hoje.</p>}
+      </section>
+      <section>
+        <h3>Custos de hoje</h3>
+        {todayExpenses.length?todayExpenses.slice().reverse().map((e)=><div className="finance-row" key={e.id}><span>{e.description}<small>{timeFmt(e.createdAt)}</small></span><b className="red">- {brl(e.amount)}</b></div>):<p>Nenhum custo registrado hoje.</p>}
+      </section>
+      <section>
+        <h3>Resumo operacional</h3>
+        <div className="report-metric"><span>Ticket médio</span><b>{brl(todaySales.length?revenue/todaySales.length:0)}</b></div>
+        <div className="report-metric"><span>Margem</span><b>{revenue?(((profit)/revenue)*100).toFixed(1):"0"}%</b></div>
+        <div className="report-metric"><span>Itens vendidos</span><b>{todaySales.flatMap((s)=>s.items).reduce((n,i)=>n+i.qty,0)}</b></div>
+        <div className="report-metric"><span>Comandas pendentes</span><b>{commands.length}</b></div>
+      </section>
+    </div>
   </div>
 }
 
