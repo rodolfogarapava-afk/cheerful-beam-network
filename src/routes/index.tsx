@@ -62,7 +62,7 @@ const stockFallbackImages:Record<string,string>={
 
 function ProductImage({product,className=""}:{product:Product;className?:string}){
   const fallback=stockFallbackImages[product.category]||stockFallbackImages.Entradas;
-  return <img className={className} src={product.image?.trim()||fallback} alt={product.name} loading="lazy" onError={(event)=>{const image=event.currentTarget;if(image.src!==fallback)image.src=fallback}}/>;
+  return <img className={className} src={product.image?.trim()||fallback} alt={product.name} loading="eager" decoding="async" fetchPriority="high" width={600} height={600} onError={(event)=>{const image=event.currentTarget;if(image.src!==fallback)image.src=fallback}}/>;
 }
 
 const initialProducts: Product[] = [
