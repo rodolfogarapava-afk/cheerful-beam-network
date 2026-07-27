@@ -936,34 +936,131 @@ function mergeOpenCommands(commands:IntegratedCommand[]){
 function IntegratedProducts({products,categories,onChange,onAddCategory,onRenameCategory,onDeleteCategory}:{products:Product[];categories:string[];onChange:(products:Product[])=>void;onAddCategory:(name:string)=>void;onRenameCategory:(oldName:string,newName:string)=>void;onDeleteCategory:(name:string)=>void}) {
   const blank={id:0,name:"",price:"",category:categories[0]||"Entradas",description:"",image:"",tag:"",trackStock:true,stock:"0",minStock:"5"};
   const [form,setForm]=useState(blank);
+  const [drawerOpen,setDrawerOpen]=useState(false);
   const [editing,setEditing]=useState<number|null>(null);
   const [filter,setFilter]=useState("Todos");
+  const [query,setQuery]=useState("");
+  const [manageOpen,setManageOpen]=useState(false);
   const [newCategory,setNewCategory]=useState("");
   const [categoryToDelete,setCategoryToDelete]=useState<string|null>(null);
-  const visible=products.filter((p)=>filter==="Todos"||p.category===filter);
+
+  const visible=products
+    .filter((p)=>filter==="Todos"||p.category===filter)
+    .filter((p)=>!query.trim()||p.name.toLowerCase().includes(query.trim().toLowerCase())||p.description.toLowerCase().includes(query.trim().toLowerCase()));
+
+  const openNew=()=>{setEditing(null);setForm(blank);setDrawerOpen(true)};
+  const openEdit=(product:Product)=>{setEditing(product.id);setForm({id:product.id,name:product.name,price:String(product.price).replace(".",","),category:product.category,description:product.description,image:product.image,tag:product.tag||"",trackStock:!!product.trackStock,stock:String(product.stock||0),minStock:String(product.minStock||0)});setDrawerOpen(true)};
+  const closeDrawer=()=>{setDrawerOpen(false);setEditing(null);setForm(blank)};
   const submit=()=>{
     const price=Number(form.price.replace(",","."));
     if(!form.name.trim()||!Number.isFinite(price)||price<=0||!form.category)return;
     const item:Product={id:editing??Math.max(0,...products.map((p)=>p.id))+1,name:form.name.trim(),price,category:form.category,description:form.description.trim()||"Produto preparado com ingredientes selecionados.",image:form.image.trim()||"https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=900&q=88",tag:form.tag.trim()||undefined,trackStock:form.trackStock,stock:Math.max(0,Number(form.stock)||0),minStock:Math.max(0,Number(form.minStock)||0)};
-    onChange(editing?products.map((p)=>p.id===editing?item:p):[...products,item]);setForm(blank);setEditing(null);
+    onChange(editing?products.map((p)=>p.id===editing?item:p):[...products,item]);
+    closeDrawer();
   };
-  return <div className="integrated-view products-editor"><div className="integrated-heading"><div><p>CADÁPIO · ADMINISTRAÇÃO</p><h1>Produtos e variedades</h1><span>Cadastre e edite os itens exibidos em todas as categorias do cardápio.</span></div><b>{products.length} produtos</b></div>
-    <div className="category-manager"><div className="category-manager-head"><div><h3>Categorias do cardápio</h3><p>Renomeie, crie ou remova categorias vazias.</p></div><div><input value={newCategory} onChange={(e)=>setNewCategory(e.target.value)} placeholder="Nova categoria"/><button onClick={()=>{const clean=newCategory.trim();if(clean&&!categories.some((c)=>c.toLowerCase()===clean.toLowerCase())){onAddCategory(clean);setNewCategory("")}}}><Plus/> ADICIONAR</button></div></div>
-      <div className="category-editor-list">{categories.map((category)=><article key={category}><span>{category}</span><small>{products.filter((p)=>p.category===category).length} produtos</small><button onClick={()=>{const next=window.prompt("Novo nome da categoria",category);if(next)onRenameCategory(category,next)}}>RENOMEAR</button><button className="danger" onClick={()=>setCategoryToDelete(category)}>REMOVER</button></article>)}</div>
+  const remove=(id:number)=>{onChange(products.filter((p)=>p.id!==id));if(editing===id)closeDrawer()};
+  const duplicate=(product:Product)=>{const copy:Product={...product,id:Math.max(0,...products.map((p)=>p.id))+1,name:`${product.name} (cópia)`};onChange([...products,copy])};
+
+  return <div className="integrated-view catalog-view">
+    <header className="catalog-topbar">
+      <div>
+        <p>CARDÁPIO</p>
+        <h1>Catálogo</h1>
+      </div>
+      <div className="catalog-actions">
+        <div className="catalog-search"><Search size={15}/><input placeholder="Buscar produto..." value={query} onChange={(e)=>setQuery(e.target.value)}/></div>
+        <button className="ghost-btn" onClick={()=>setManageOpen(true)}><Tags size={15}/> Categorias</button>
+        <button className="primary-btn" onClick={openNew}><Plus size={16}/> Novo produto</button>
+      </div>
+    </header>
+
+    <div className="catalog-chips">
+      <button className={filter==="Todos"?"chip active":"chip"} onClick={()=>setFilter("Todos")}>Todos <em>{products.length}</em></button>
+      {categories.map((c)=><button key={c} className={filter===c?"chip active":"chip"} onClick={()=>setFilter(c)}>{c} <em>{products.filter((p)=>p.category===c).length}</em></button>)}
     </div>
-    <div className="editor-layout"><section className="product-form-panel"><h3>{editing?"Editar produto":"Novo produto"}</h3>
-      <label>Nome<input value={form.name} onChange={(e)=>setForm({...form,name:e.target.value})} placeholder="Ex.: Burger da Casa"/></label>
-      <div className="form-row"><label>Preço<input value={form.price} inputMode="decimal" onChange={(e)=>setForm({...form,price:e.target.value})} placeholder="39,90"/></label><label>Categoria<select value={form.category} onChange={(e)=>setForm({...form,category:e.target.value})}>{categories.map((c)=><option key={c}>{c}</option>)}</select></label></div>
-      <label>Descrição<textarea value={form.description} onChange={(e)=>setForm({...form,description:e.target.value})} placeholder="Ingredientes e detalhes do produto"/></label>
-      <label>URL da imagem<input value={form.image} onChange={(e)=>setForm({...form,image:e.target.value})} placeholder="https://..."/></label>
-      <label>Badge opcional<input value={form.tag} onChange={(e)=>setForm({...form,tag:e.target.value})} placeholder="NOVO, DESTAQUE..."/></label>
-      <label className="stock-toggle"><input type="checkbox" checked={form.trackStock} onChange={(e)=>setForm({...form,trackStock:e.target.checked})}/> Controlar estoque deste produto</label>
-      {form.trackStock&&<div className="form-row"><label>Estoque atual<input value={form.stock} inputMode="numeric" onChange={(e)=>setForm({...form,stock:e.target.value})}/></label><label>Estoque mínimo<input value={form.minStock} inputMode="numeric" onChange={(e)=>setForm({...form,minStock:e.target.value})}/></label></div>}
-      <div className="editor-actions">{editing&&<button onClick={()=>{setEditing(null);setForm(blank)}}>CANCELAR</button>}<button className="gold" onClick={submit}>{editing?"SALVAR ALTERAÇÕES":"ADICIONAR PRODUTO"}</button></div>
-    </section>
-    <section className="product-manager"><div className="manager-tabs">{["Todos",...categories].map((c)=><button className={filter===c?"active":""} onClick={()=>setFilter(c)} key={c}>{c}<small>{c==="Todos"?products.length:products.filter((p)=>p.category===c).length}</small></button>)}</div>
-      <div className="manager-list">{visible.map((product)=><article key={product.id}><ProductImage product={product}/><div><small>{product.category}</small><h3>{product.name}</h3><p>{product.description}</p>{product.trackStock&&<em className={(product.stock||0)<=(product.minStock||0)?"stock-low":""}>{product.stock||0} em estoque · mínimo {product.minStock||0}</em>}</div><strong>R$ {product.price.toFixed(2).replace(".",",")}</strong><div className="manager-actions"><button onClick={()=>{setEditing(product.id);setForm({id:product.id,name:product.name,price:String(product.price).replace(".",","),category:product.category,description:product.description,image:product.image,tag:product.tag||"",trackStock:!!product.trackStock,stock:String(product.stock||0),minStock:String(product.minStock||0)})}}>EDITAR</button><button className="danger" onClick={()=>onChange(products.filter((p)=>p.id!==product.id))}>REMOVER</button></div></article>)}</div>
-    </section></div>
+
+    <div className="catalog-grid">
+      {visible.map((product)=>(
+        <article key={product.id} className="catalog-card" onClick={()=>openEdit(product)}>
+          <div className="catalog-card-media"><ProductImage product={product}/>
+            {product.tag&&<span className="catalog-tag">{product.tag}</span>}
+            <div className="catalog-hover">
+              <button onClick={(e)=>{e.stopPropagation();openEdit(product)}} title="Editar"><Utensils size={14}/></button>
+              <button onClick={(e)=>{e.stopPropagation();duplicate(product)}} title="Duplicar"><Plus size={14}/></button>
+              <button onClick={(e)=>{e.stopPropagation();remove(product.id)}} title="Remover" className="danger"><X size={14}/></button>
+            </div>
+          </div>
+          <div className="catalog-card-body">
+            <small>{product.category}</small>
+            <h3>{product.name}</h3>
+            <div className="catalog-card-foot">
+              <strong>R$ {product.price.toFixed(2).replace(".",",")}</strong>
+              {product.trackStock&&<span className={(product.stock||0)<=(product.minStock||0)?"catalog-dot low":"catalog-dot"}>{product.stock||0}</span>}
+            </div>
+          </div>
+        </article>
+      ))}
+      <button className="catalog-card catalog-add" onClick={openNew}>
+        <Plus size={26}/>
+        <span>Adicionar produto</span>
+      </button>
+    </div>
+
+    {!visible.length&&<div className="integrated-empty"><Utensils/><h3>Nenhum produto encontrado</h3><p>Tente outra busca ou crie um novo item.</p></div>}
+
+    {drawerOpen&&<div className="drawer-backdrop" onMouseDown={closeDrawer}>
+      <aside className="drawer" onMouseDown={(e)=>e.stopPropagation()}>
+        <header className="drawer-head">
+          <div><p>{editing?"EDITAR":"NOVO"}</p><h2>{editing?form.name||"Produto":"Novo produto"}</h2></div>
+          <button className="drawer-close" onClick={closeDrawer} aria-label="Fechar"><X/></button>
+        </header>
+        <div className="drawer-body">
+          {form.image&&<div className="drawer-preview" style={{backgroundImage:`url(${form.image})`}}/>}
+          <label className="field">Nome<input value={form.name} onChange={(e)=>setForm({...form,name:e.target.value})} placeholder="Ex.: Burger da Casa"/></label>
+          <div className="field-row">
+            <label className="field">Preço<input value={form.price} inputMode="decimal" onChange={(e)=>setForm({...form,price:e.target.value})} placeholder="39,90"/></label>
+            <label className="field">Categoria<select value={form.category} onChange={(e)=>setForm({...form,category:e.target.value})}>{categories.map((c)=><option key={c}>{c}</option>)}</select></label>
+          </div>
+          <label className="field">Descrição<textarea rows={3} value={form.description} onChange={(e)=>setForm({...form,description:e.target.value})} placeholder="Ingredientes e detalhes"/></label>
+          <label className="field">Imagem (URL)<input value={form.image} onChange={(e)=>setForm({...form,image:e.target.value})} placeholder="https://..."/></label>
+          <label className="field">Badge<input value={form.tag} onChange={(e)=>setForm({...form,tag:e.target.value})} placeholder="NOVO, DESTAQUE..."/></label>
+          <label className="drawer-switch"><input type="checkbox" checked={form.trackStock} onChange={(e)=>setForm({...form,trackStock:e.target.checked})}/><span/> Controlar estoque</label>
+          {form.trackStock&&<div className="field-row">
+            <label className="field">Estoque<input value={form.stock} inputMode="numeric" onChange={(e)=>setForm({...form,stock:e.target.value})}/></label>
+            <label className="field">Mínimo<input value={form.minStock} inputMode="numeric" onChange={(e)=>setForm({...form,minStock:e.target.value})}/></label>
+          </div>}
+        </div>
+        <footer className="drawer-foot">
+          {editing&&<button className="danger-btn" onClick={()=>remove(editing!)}>Remover</button>}
+          <button className="ghost-btn" onClick={closeDrawer}>Cancelar</button>
+          <button className="primary-btn" onClick={submit}>{editing?"Salvar":"Adicionar"}</button>
+        </footer>
+      </aside>
+    </div>}
+
+    {manageOpen&&<div className="modal-backdrop" onMouseDown={()=>setManageOpen(false)}>
+      <section className="modal categories-modal" onMouseDown={(e)=>e.stopPropagation()}>
+        <button className="modal-close" onClick={()=>setManageOpen(false)} aria-label="Fechar"><X/></button>
+        <span className="modal-icon"><Tags/></span>
+        <h3>Categorias</h3>
+        <p>Organize as seções do cardápio.</p>
+        <div className="cat-new">
+          <input value={newCategory} onChange={(e)=>setNewCategory(e.target.value)} placeholder="Nova categoria" onKeyDown={(e)=>{if(e.key==="Enter"){const clean=newCategory.trim();if(clean&&!categories.some((c)=>c.toLowerCase()===clean.toLowerCase())){onAddCategory(clean);setNewCategory("")}}}}/>
+          <button className="primary-btn" onClick={()=>{const clean=newCategory.trim();if(clean&&!categories.some((c)=>c.toLowerCase()===clean.toLowerCase())){onAddCategory(clean);setNewCategory("")}}}><Plus size={14}/></button>
+        </div>
+        <div className="cat-list">{categories.map((category)=>{
+          const count=products.filter((p)=>p.category===category).length;
+          return <div key={category} className="cat-row">
+            <div><strong>{category}</strong><small>{count} {count===1?"produto":"produtos"}</small></div>
+            <div>
+              <button className="ghost-btn" onClick={()=>{const next=window.prompt("Novo nome da categoria",category);if(next)onRenameCategory(category,next)}}>Renomear</button>
+              <button className="danger-btn" onClick={()=>setCategoryToDelete(category)}>Remover</button>
+            </div>
+          </div>;
+        })}</div>
+      </section>
+    </div>}
+
     {categoryToDelete&&<div className="modal-backdrop" onMouseDown={()=>setCategoryToDelete(null)}><section className="modal confirmation-modal" onMouseDown={(event)=>event.stopPropagation()}>
       <button className="modal-close" onClick={()=>setCategoryToDelete(null)} aria-label="Fechar"><X/></button>
       <span className="modal-icon"><Tags/></span>
