@@ -121,7 +121,7 @@ function Home() {
 
   useEffect(() => {
     initAudioContext();
-    const menuVersionKey = "burguer-house-v30-espetinhos-menu";
+    const menuVersionKey = "burguer-house-v31-espetinhos-menu";
     const menuDone = window.localStorage.getItem(menuVersionKey);
     const saved = window.localStorage.getItem("burguer-house-products");
     if (!menuDone) {
