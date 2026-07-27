@@ -1046,30 +1046,76 @@ function IntegratedCash({sales,expenses,onAddExpense}:{sales:IntegratedSale[];ex
 
 function IntegratedReports({sales,expenses,commands}:{sales:IntegratedSale[];expenses:IntegratedExpense[];commands:IntegratedCommand[]}) {
   const brl=(v:number)=>`R$ ${v.toFixed(2).replace(".",",")}`;
-  const startOfToday=new Date();startOfToday.setHours(0,0,0,0);
-  const todayMs=startOfToday.getTime();
-  const isToday=(ts:number)=>ts>=todayMs;
-  const todaySales=sales.filter((s)=>isToday(s.createdAt));
-  const todayExpenses=expenses.filter((e)=>isToday(e.createdAt));
-  const revenue=todaySales.reduce((s,x)=>s+x.total,0);
-  const costs=todayExpenses.reduce((s,x)=>s+x.amount,0);
+  type Period="today"|"7d"|"30d"|"month"|"custom";
+  const [period,setPeriod]=useState<Period>("today");
+  const toISO=(d:Date)=>{const z=new Date(d.getTime()-d.getTimezoneOffset()*60000);return z.toISOString().slice(0,10)};
+  const today=new Date();
+  const [customFrom,setCustomFrom]=useState(toISO(today));
+  const [customTo,setCustomTo]=useState(toISO(today));
+
+  const range=useMemo(()=>{
+    const end=new Date();end.setHours(23,59,59,999);
+    const start=new Date();start.setHours(0,0,0,0);
+    if(period==="today"){/* start=hoje */}
+    else if(period==="7d"){start.setDate(start.getDate()-6)}
+    else if(period==="30d"){start.setDate(start.getDate()-29)}
+    else if(period==="month"){start.setDate(1)}
+    else if(period==="custom"){
+      const f=new Date(customFrom+"T00:00:00");
+      const t=new Date(customTo+"T23:59:59");
+      if(!isNaN(f.getTime()))start.setTime(f.getTime());
+      if(!isNaN(t.getTime()))end.setTime(t.getTime());
+    }
+    return {start:start.getTime(),end:end.getTime()};
+  },[period,customFrom,customTo]);
+
+  const inRange=(ts:number)=>ts>=range.start&&ts<=range.end;
+  const periodSales=sales.filter((s)=>inRange(s.createdAt));
+  const periodExpenses=expenses.filter((e)=>inRange(e.createdAt));
+  const revenue=periodSales.reduce((s,x)=>s+x.total,0);
+  const costs=periodExpenses.reduce((s,x)=>s+x.amount,0);
   const profit=revenue-costs;
 
   const methodKeys=["Dinheiro","PIX","Cartão Crédito","Cartão Débito"] as const;
   const byMethod=Object.fromEntries(methodKeys.map((m)=>[m,{total:0,count:0}])) as Record<string,{total:number;count:number}>;
-  todaySales.forEach((s)=>{const key=methodKeys.includes(s.method as typeof methodKeys[number])?s.method:"Dinheiro";byMethod[key].total+=s.total;byMethod[key].count+=1});
+  periodSales.forEach((s)=>{const key=methodKeys.includes(s.method as typeof methodKeys[number])?s.method:"Dinheiro";byMethod[key].total+=s.total;byMethod[key].count+=1});
 
   const grouped=new Map<string,{qty:number;revenue:number}>();
-  todaySales.flatMap((s)=>s.items).forEach((i)=>{const old=grouped.get(i.name)||{qty:0,revenue:0};grouped.set(i.name,{qty:old.qty+i.qty,revenue:old.revenue+i.qty*i.price})});
+  periodSales.flatMap((s)=>s.items).forEach((i)=>{const old=grouped.get(i.name)||{qty:0,revenue:0};grouped.set(i.name,{qty:old.qty+i.qty,revenue:old.revenue+i.qty*i.price})});
   const ranking=Array.from(grouped.entries()).sort((a,b)=>b[1].qty-a[1].qty);
   const topRevenue=ranking[0]?.[1].qty||1;
 
-  const timeFmt=(ts:number)=>new Date(ts).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+  const dateFmt=(ts:number)=>new Date(ts).toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
+  const shortDate=(ts:number)=>new Date(ts).toLocaleDateString("pt-BR");
+
+  const periodLabel=period==="today"?`Hoje · ${shortDate(range.start)}`
+    :period==="7d"?`Últimos 7 dias · ${shortDate(range.start)} a ${shortDate(range.end)}`
+    :period==="30d"?`Últimos 30 dias · ${shortDate(range.start)} a ${shortDate(range.end)}`
+    :period==="month"?`Mês atual · ${shortDate(range.start)} a ${shortDate(range.end)}`
+    :`Personalizado · ${shortDate(range.start)} a ${shortDate(range.end)}`;
+
+  const periodTags:{key:Period;label:string}[]=[
+    {key:"today",label:"Hoje"},
+    {key:"7d",label:"Últimos 7 dias"},
+    {key:"30d",label:"Últimos 30 dias"},
+    {key:"month",label:"Mês atual"},
+    {key:"custom",label:"Personalizado"},
+  ];
 
   return <div className="integrated-view">
     <div className="integrated-heading">
-      <div><p>ANÁLISE · HOJE</p><h1>Relatórios</h1><span>Recebimentos por forma de pagamento, vendas e custos do dia.</span></div>
-      <button onClick={()=>generateReportPdf({periodLabel:`Diário ${new Date().toLocaleDateString("pt-BR")}`,sales:todaySales,expenses:todayExpenses,pendingCommands:commands.length})}>IMPRIMIR RELATÓRIO</button>
+      <div><p>ANÁLISE · {periodLabel.toUpperCase()}</p><h1>Relatórios</h1><span>Recebimentos por forma de pagamento, vendas e custos no período.</span></div>
+      <button onClick={()=>generateReportPdf({periodLabel,sales:periodSales,expenses:periodExpenses,pendingCommands:commands.length})}>IMPRIMIR RELATÓRIO</button>
+    </div>
+
+    <div className="report-period">
+      <div className="period-tags">
+        {periodTags.map((t)=><button key={t.key} className={period===t.key?"active":""} onClick={()=>setPeriod(t.key)}>{t.label}</button>)}
+      </div>
+      {period==="custom" && <div className="period-custom">
+        <label>De <input type="date" value={customFrom} max={customTo} onChange={(e)=>setCustomFrom(e.target.value)}/></label>
+        <label>Até <input type="date" value={customTo} min={customFrom} onChange={(e)=>setCustomTo(e.target.value)}/></label>
+      </div>}
     </div>
 
     <div className="method-summary">
@@ -1080,27 +1126,27 @@ function IntegratedReports({sales,expenses,commands}:{sales:IntegratedSale[];exp
       <article><small>Entradas</small><strong>{brl(revenue)}</strong></article>
       <article><small>Saídas</small><strong className="red">{brl(costs)}</strong></article>
       <article><small>Lucro</small><strong>{brl(profit)}</strong></article>
-      <article><small>Vendas</small><strong>{todaySales.length}</strong></article>
+      <article><small>Vendas</small><strong>{periodSales.length}</strong></article>
     </div>
 
     <div className="finance-panels reports-panels">
       <section>
-        <h3>Produtos mais vendidos hoje</h3>
-        {ranking.length?ranking.map(([name,data],i)=><div className="rank-row" key={name}><b>{i+1}</b><span>{name}<i style={{width:`${Math.max(16,(data.qty/topRevenue)*100)}%`}}/></span><strong>{data.qty} un.</strong></div>):<p>Nenhuma venda hoje.</p>}
+        <h3>Produtos mais vendidos</h3>
+        {ranking.length?ranking.map(([name,data],i)=><div className="rank-row" key={name}><b>{i+1}</b><span>{name}<i style={{width:`${Math.max(16,(data.qty/topRevenue)*100)}%`}}/></span><strong>{data.qty} un.</strong></div>):<p>Nenhuma venda no período.</p>}
       </section>
       <section>
-        <h3>Vendas de hoje</h3>
-        {todaySales.length?todaySales.slice().reverse().map((s)=><div className="finance-row" key={s.id}><span>{s.name}<small>{timeFmt(s.createdAt)} · {s.method}</small></span><b>{brl(s.total)}</b></div>):<p>Nenhuma venda registrada hoje.</p>}
+        <h3>Vendas</h3>
+        {periodSales.length?periodSales.slice().reverse().map((s)=><div className="finance-row" key={s.id}><span>{s.name}<small>{dateFmt(s.createdAt)} · {s.method}</small></span><b>{brl(s.total)}</b></div>):<p>Nenhuma venda registrada.</p>}
       </section>
       <section>
-        <h3>Custos de hoje</h3>
-        {todayExpenses.length?todayExpenses.slice().reverse().map((e)=><div className="finance-row" key={e.id}><span>{e.description}<small>{timeFmt(e.createdAt)}</small></span><b className="red">- {brl(e.amount)}</b></div>):<p>Nenhum custo registrado hoje.</p>}
+        <h3>Custos</h3>
+        {periodExpenses.length?periodExpenses.slice().reverse().map((e)=><div className="finance-row" key={e.id}><span>{e.description}<small>{dateFmt(e.createdAt)}</small></span><b className="red">- {brl(e.amount)}</b></div>):<p>Nenhum custo registrado.</p>}
       </section>
       <section>
         <h3>Resumo operacional</h3>
-        <div className="report-metric"><span>Ticket médio</span><b>{brl(todaySales.length?revenue/todaySales.length:0)}</b></div>
+        <div className="report-metric"><span>Ticket médio</span><b>{brl(periodSales.length?revenue/periodSales.length:0)}</b></div>
         <div className="report-metric"><span>Margem</span><b>{revenue?(((profit)/revenue)*100).toFixed(1):"0"}%</b></div>
-        <div className="report-metric"><span>Itens vendidos</span><b>{todaySales.flatMap((s)=>s.items).reduce((n,i)=>n+i.qty,0)}</b></div>
+        <div className="report-metric"><span>Itens vendidos</span><b>{periodSales.flatMap((s)=>s.items).reduce((n,i)=>n+i.qty,0)}</b></div>
         <div className="report-metric"><span>Comandas pendentes</span><b>{commands.length}</b></div>
       </section>
     </div>
