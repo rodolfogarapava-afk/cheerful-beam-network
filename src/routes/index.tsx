@@ -93,7 +93,7 @@ const nav = [
 function Home() {
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [categories, setCategories] = useState<string[]>(nav.map((item) => item.label));
-  const [activeMain, setActiveMain] = useState("Lanches");
+  const [activeMain, setActiveMain] = useState("Espetinhos");
   const [cart, setCart] = useState<Record<number, number>>({});
   const [modal, setModal] = useState<"waiter" | "review" | "cart" | "about" | "commands" | "payment" | "doneness" | null>(null);
   const [pendingMeatId, setPendingMeatId] = useState<number | null>(null);
