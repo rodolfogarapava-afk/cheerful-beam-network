@@ -480,6 +480,7 @@ function Home() {
                         const name=customerName.trim();
                         const newItems=currentCartItems.map((item)=>({...item,delivered:false}));
                         setSavedCommands((current)=>mergeOpenCommands([...current,{id:Date.now(),name,count,total,createdAt:Date.now(),items:newItems}]));
+                        adjustStock(newItems.map((item)=>({name:item.name,qty:-item.qty})));
                         printKitchenTicket(name, newItems);
                         playNotificationSound("sale");
                         setCart({}); setCartDetails({}); setModal("commands");
