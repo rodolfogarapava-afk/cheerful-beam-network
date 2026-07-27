@@ -687,3 +687,11 @@ button { cursor:pointer;touch-action:manipulation; }
   .stock-summary strong { font-size: 16px; }
   .integrated-heading h1 { font-size: 22px; }
 }
+
+@media (max-width: 640px) {
+  .stock-toolbar { flex-direction: column; align-items: stretch; }
+  .stock-toolbar .stock-search,
+  .stock-toolbar .stock-filter,
+  .stock-toolbar .stock-add-btn { width: 100%; justify-content: flex-start; }
+  .stock-toolbar .stock-add-btn { justify-content: center; }
+}
