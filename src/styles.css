@@ -297,7 +297,7 @@ button { cursor:pointer;touch-action:manipulation; }
 /* Responsividade geral: desktop compacto, tablet e celular */
 @media (max-width: 1180px) and (min-width: 901px) {
   .workspace{grid-template-columns:148px 1fr}
-  .sidebar{padding-inline:11px}
+  .sidebar{padding-inline:11px;width:148px}
   .nav-list button{min-height:72px}
   .content{padding-inline:24px}
   .product-card{grid-template-columns:260px 1fr}
