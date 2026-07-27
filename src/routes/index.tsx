@@ -959,7 +959,10 @@ function IntegratedCommands({commands,setCommands,onCharge,products,adjustStock}
   const confirmAction=()=>{
     if(!confirmation)return;
     if(confirmation.action==="print")printKitchenTicket(confirmation.command.name,confirmation.command.items);
-    else setCommands((all)=>all.filter((command)=>command.id!==confirmation.command.id));
+    else {
+      adjustStock(confirmation.command.items.map((item)=>({name:item.name,qty:item.qty})));
+      setCommands((all)=>all.filter((command)=>command.id!==confirmation.command.id));
+    }
     setConfirmation(null);
   };
   const [pendingChanges,setPendingChanges]=useState<OrderChange[]>([]);
@@ -990,17 +993,25 @@ function IntegratedCommands({commands,setCommands,onCharge,products,adjustStock}
   };
   const changeItemQty=(command:IntegratedCommand,index:number,delta:number)=>{
     const item=command.items[index];
+    if(delta>0){
+      const product=products.find((p)=>p.name===item.name);
+      if(product?.trackStock&&Number(product.stock||0)<=0)return;
+    }
     const nextQty=item.qty+delta;
     const nextItems=nextQty<=0?command.items.filter((_,i)=>i!==index):command.items.map((it,i)=>i===index?{...it,qty:nextQty}:it);
+    adjustStock([{name:item.name,qty:-delta}]);
     applyEdit(command,nextItems,{type:delta>0?"adicionado":"removido",name:item.name,qty:1,notes:item.detail});
   };
   const removeItem=(command:IntegratedCommand,index:number)=>{
     const item=command.items[index];
+    adjustStock([{name:item.name,qty:item.qty}]);
     applyEdit(command,command.items.filter((_,i)=>i!==index),{type:"removido",name:item.name,qty:item.qty,notes:item.detail});
   };
   const addProductToCommand=(command:IntegratedCommand,product:Product)=>{
+    if(product.trackStock&&Number(product.stock||0)<=0)return;
     const existingIndex=command.items.findIndex((item)=>item.name===product.name&&!item.detail);
     const nextItems=existingIndex>=0?command.items.map((item,i)=>i===existingIndex?{...item,qty:item.qty+1}:item):[...command.items,{name:product.name,qty:1,price:product.price,detail:"",delivered:false}];
+    adjustStock([{name:product.name,qty:-1}]);
     applyEdit(command,nextItems,{type:"adicionado",name:product.name,qty:1});
   };
   return <div className="integrated-view">
