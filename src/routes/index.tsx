@@ -19,6 +19,7 @@ import {
   Utensils,
   Wine,
   X,
+  ChevronDown,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { sendOrderTicketToPrinter, sendOrderUpdateToPrinter, sendReceiptToPrinter, type OrderChange } from "@/lib/printReceipt";
@@ -886,40 +887,55 @@ function IntegratedStock({products,onChange}:{products:Product[];onChange:(produ
       <label className="stock-filter"><input type="checkbox" checked={onlyLow} onChange={(e)=>setOnlyLow(e.target.checked)}/> Apenas estoque baixo</label>
     </div>
 
-    <div className="stock-simple">
-      {visible.map((product)=>{
-        const current=Number(product.stock||0);
-        const min=Number(product.minStock||0);
-        const state=!product.trackStock?"off":current<=0?"out":current<=min?"low":"ok";
-        return <article key={product.id} className={`stock-row stock-${state}`}>
-          <ProductImage product={product}/>
-          <div className="stock-info">
-            <small>{product.category}</small>
-            <h3>{product.name}</h3>
-            {product.trackStock
-              ? <span className={state==="out"?"red":state==="low"?"amber":"green"}>{state==="out"?"Esgotado":state==="low"?"Repor estoque":"Disponível"}</span>
-              : <span className="muted">Estoque não controlado</span>}
+    {(() => {
+      const categories = Array.from(new Set(products.map((p)=>p.category)));
+      const grouped = categories.map((cat)=>({cat,items:visible.filter((p)=>p.category===cat)})).filter((g)=>g.items.length);
+      if(!grouped.length) return <div className="integrated-empty"><Store/><h3>Nenhum produto encontrado</h3><p>Ajuste a busca ou desmarque o filtro.</p></div>;
+      return <div className="stock-groups">{grouped.map(({cat,items})=>{
+        const catLow=items.filter((p)=>p.trackStock&&(p.stock||0)<=(p.minStock||0)).length;
+        return <details key={cat} className="stock-drawer" open>
+          <summary>
+            <span className="drawer-caret"><ChevronDown size={16}/></span>
+            <span className="drawer-title">{cat}</span>
+            <span className="drawer-count">{items.length} {items.length===1?"item":"itens"}</span>
+            {catLow>0 && <span className="drawer-alert">{catLow} alerta{catLow===1?"":"s"}</span>}
+          </summary>
+          <div className="stock-simple">
+            {items.map((product)=>{
+              const current=Number(product.stock||0);
+              const min=Number(product.minStock||0);
+              const state=!product.trackStock?"off":current<=0?"out":current<=min?"low":"ok";
+              return <article key={product.id} className={`stock-row stock-${state}`}>
+                <ProductImage product={product}/>
+                <div className="stock-info">
+                  <small>{product.category}</small>
+                  <h3>{product.name}</h3>
+                  {product.trackStock
+                    ? <span className={state==="out"?"red":state==="low"?"amber":"green"}>{state==="out"?"Esgotado":state==="low"?"Repor estoque":"Disponível"}</span>
+                    : <span className="muted">Estoque não controlado</span>}
+                </div>
+                {product.trackStock?<>
+                  <div className="stock-counter">
+                    <button aria-label="Diminuir" onClick={()=>setStock(product.id,current-1)}><Minus size={14}/></button>
+                    <input type="number" min={0} value={current} onChange={(e)=>setStock(product.id,Number(e.target.value))}/>
+                    <button aria-label="Aumentar" onClick={()=>setStock(product.id,current+1)}><Plus size={14}/></button>
+                  </div>
+                  <div className="stock-quick">
+                    <button onClick={()=>setStock(product.id,current+5)}>+5</button>
+                    <button onClick={()=>setStock(product.id,current+10)}>+10</button>
+                    <label>Mínimo <input type="number" min={0} value={min} onChange={(e)=>setMin(product.id,Number(e.target.value))}/></label>
+                  </div>
+                </>:<div className="stock-off"><p>Ative para controlar as unidades deste produto.</p></div>}
+                <label className="stock-switch" title="Controlar estoque">
+                  <input type="checkbox" checked={!!product.trackStock} onChange={(e)=>toggleTrack(product.id,e.target.checked)}/>
+                  <span/>
+                </label>
+              </article>;
+            })}
           </div>
-          {product.trackStock?<>
-            <div className="stock-counter">
-              <button aria-label="Diminuir" onClick={()=>setStock(product.id,current-1)}><Minus size={14}/></button>
-              <input type="number" min={0} value={current} onChange={(e)=>setStock(product.id,Number(e.target.value))}/>
-              <button aria-label="Aumentar" onClick={()=>setStock(product.id,current+1)}><Plus size={14}/></button>
-            </div>
-            <div className="stock-quick">
-              <button onClick={()=>setStock(product.id,current+5)}>+5</button>
-              <button onClick={()=>setStock(product.id,current+10)}>+10</button>
-              <label>Mínimo <input type="number" min={0} value={min} onChange={(e)=>setMin(product.id,Number(e.target.value))}/></label>
-            </div>
-          </>:<div className="stock-off"><p>Ative para controlar as unidades deste produto.</p></div>}
-          <label className="stock-switch" title="Controlar estoque">
-            <input type="checkbox" checked={!!product.trackStock} onChange={(e)=>toggleTrack(product.id,e.target.checked)}/>
-            <span/>
-          </label>
-        </article>;
-      })}
-      {!visible.length&&<div className="integrated-empty"><Store/><h3>Nenhum produto encontrado</h3><p>Ajuste a busca ou desmarque o filtro.</p></div>}
-    </div>
+        </details>;
+      })}</div>;
+    })()}
   </div>;
 }
 
