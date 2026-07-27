@@ -120,40 +120,22 @@ function Home() {
 
   useEffect(() => {
     initAudioContext();
+    const menuVersionKey = "burguer-house-v30-espetinhos-menu";
+    const menuDone = window.localStorage.getItem(menuVersionKey);
     const saved = window.localStorage.getItem("burguer-house-products");
-    const migrationDone = window.localStorage.getItem("burguer-house-v11-wine-removed");
-    const githubMenuDone = window.localStorage.getItem("burguer-house-v12-github-menu");
-    const generatedImagesDone = window.localStorage.getItem("burguer-house-v25-generated-product-images");
-    const importedProducts = initialProducts.filter((product) => ["Espetinhos", "Bebidas"].includes(product.category));
-    if (saved) {
-      try {
-        const parsed:Product[]=JSON.parse(saved);
-        let migrated=migrationDone?parsed:parsed.filter((product)=>product.category!=="Vinhos");
-        if(!githubMenuDone){
-          const existingNames=new Set(migrated.map((product)=>product.name.trim().toLocaleLowerCase("pt-BR")));
-          migrated=[...migrated,...importedProducts.filter((product)=>!existingNames.has(product.name.toLocaleLowerCase("pt-BR")))];
-        }
-        if(!generatedImagesDone){
-          const generatedImagesById = new Map(importedProducts.map((product) => [product.id, product.image]));
-          migrated=migrated.map((product)=>generatedImagesById.has(product.id)?{...product,image:generatedImagesById.get(product.id)!}:product);
-        }
-        setProducts(migrated);
-        if(!migrationDone||!githubMenuDone||!generatedImagesDone)window.localStorage.setItem("burguer-house-products",JSON.stringify(migrated));
-      } catch {}
-    } else setProducts(initialProducts.filter((product)=>product.category!=="Vinhos"));
-    const savedCategories = window.localStorage.getItem("burguer-house-categories");
-    if (savedCategories) {
-      try {
-        const parsed:string[]=JSON.parse(savedCategories);
-        let migrated=migrationDone?parsed:parsed.filter((category)=>category!=="Vinhos");
-        if(!githubMenuDone)migrated=[...migrated,...["Espetinhos","Bebidas"].filter((category)=>!migrated.includes(category))];
-        setCategories(migrated);
-        if(!migrationDone||!githubMenuDone)window.localStorage.setItem("burguer-house-categories",JSON.stringify(migrated));
-      } catch {}
+    if (!menuDone) {
+      setProducts(initialProducts);
+      setCategories(nav.map((item) => item.label));
+      window.localStorage.setItem("burguer-house-products", JSON.stringify(initialProducts));
+      window.localStorage.setItem("burguer-house-categories", JSON.stringify(nav.map((item) => item.label)));
+      window.localStorage.setItem(menuVersionKey, "1");
+    } else if (saved) {
+      try { setProducts(JSON.parse(saved)); } catch {}
+      const savedCategories = window.localStorage.getItem("burguer-house-categories");
+      if (savedCategories) { try { setCategories(JSON.parse(savedCategories)); } catch {} }
+    } else {
+      setProducts(initialProducts);
     }
-    if(!migrationDone)window.localStorage.setItem("burguer-house-v11-wine-removed","1");
-    if(!githubMenuDone)window.localStorage.setItem("burguer-house-v12-github-menu","1");
-    if(!generatedImagesDone)window.localStorage.setItem("burguer-house-v25-generated-product-images","1");
     try {
       const commands=window.localStorage.getItem("burguer-house-commands");
       const sales=window.localStorage.getItem("burguer-house-sales");
