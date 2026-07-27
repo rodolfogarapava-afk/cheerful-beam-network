@@ -159,6 +159,18 @@ function Home() {
     setProducts(next);
     if (typeof window !== "undefined") window.localStorage.setItem("burguer-house-products", JSON.stringify(next));
   };
+  const adjustStock = (deltas: { name: string; qty: number }[]) => {
+    setProducts((prev) => {
+      const next = prev.map((p) => {
+        if (!p.trackStock) return p;
+        const delta = deltas.filter((d) => d.name === p.name).reduce((sum, d) => sum + d.qty, 0);
+        if (!delta) return p;
+        return { ...p, stock: Math.max(0, Number(p.stock || 0) + delta) };
+      });
+      if (typeof window !== "undefined") window.localStorage.setItem("burguer-house-products", JSON.stringify(next));
+      return next;
+    });
+  };
   const persistCategories = (next: string[]) => {
     setCategories(next);
     window.localStorage.setItem("burguer-house-categories", JSON.stringify(next));
