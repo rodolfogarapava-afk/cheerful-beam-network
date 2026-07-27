@@ -148,8 +148,8 @@
 
 :root { --yellow:#ffc900; --ink:#0d0e11; --panel:#17191f; --muted:#a1a1aa; }
 * { box-sizing:border-box; }
-html { overflow-x:hidden; }
-body { margin:0; min-width:320px;background:#0d0e11; color:#f7f7f8; font-family:"Inter",sans-serif;overflow-x:hidden; }
+html { overflow-x:clip; }
+body { margin:0; min-width:320px;background:#0d0e11; color:#f7f7f8; font-family:"Inter",sans-serif;overflow-x:clip; }
 img { max-width:100%; }
 button,input,textarea { font:inherit; }
 button { cursor:pointer;touch-action:manipulation; }
