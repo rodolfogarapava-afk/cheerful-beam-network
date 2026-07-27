@@ -982,14 +982,73 @@ function IntegratedProducts({products,categories,onChange,onAddCategory,onRename
 }
 
 function IntegratedStock({products,onChange}:{products:Product[];onChange:(products:Product[])=>void}) {
-  const tracked=products.filter((product)=>product.trackStock);
-  const low=tracked.filter((product)=>(product.stock||0)<=(product.minStock||0));
-  const adjust=(id:number,amount:number)=>onChange(products.map((product)=>product.id===id?{...product,stock:Math.max(0,Number(product.stock||0)+amount)}:product));
-  return <div className="integrated-view"><div className="integrated-heading"><div><p>INVENTÁRIO · CONTROLE</p><h1>Estoque</h1><span>Acompanhe quantidades e reponha produtos diretamente no cardápio.</span></div><b>{low.length} alertas</b></div>
-    <div className="cash-summary"><article><small>Produtos controlados</small><strong>{tracked.length}</strong></article><article><small>Estoque baixo</small><strong className="red">{low.length}</strong></article><article><small>Unidades disponíveis</small><strong>{tracked.reduce((sum,p)=>sum+Number(p.stock||0),0)}</strong></article></div>
-    <div className="stock-list">{tracked.map((product)=><article key={product.id}><ProductImage product={product}/><div><small>{product.category}</small><h3>{product.name}</h3><span>Mínimo: {product.minStock||0}</span></div><div className={`stock-status ${(product.stock||0)<=(product.minStock||0)?"low":""}`}><b>{product.stock||0}</b><small>{(product.stock||0)<=0?"ESGOTADO":(product.stock||0)<=(product.minStock||0)?"REPOR ESTOQUE":"DISPONÍVEL"}</small></div><div className="stock-controls"><button onClick={()=>adjust(product.id,-1)}><Minus/></button><button onClick={()=>adjust(product.id,1)}><Plus/></button><button onClick={()=>adjust(product.id,10)}>+10</button></div></article>)}</div>
-    {!tracked.length&&<div className="integrated-empty"><Store/><h3>Nenhum estoque controlado</h3><p>Ative “Controlar estoque” ao editar um produto.</p></div>}
-  </div>
+  const [query,setQuery]=useState("");
+  const [onlyLow,setOnlyLow]=useState(false);
+  const tracked=products.filter((p)=>p.trackStock);
+  const low=tracked.filter((p)=>(p.stock||0)<=(p.minStock||0));
+  const totalUnits=tracked.reduce((sum,p)=>sum+Number(p.stock||0),0);
+
+  const setStock=(id:number,value:number)=>onChange(products.map((p)=>p.id===id?{...p,stock:Math.max(0,Math.floor(value)||0)}:p));
+  const setMin=(id:number,value:number)=>onChange(products.map((p)=>p.id===id?{...p,minStock:Math.max(0,Math.floor(value)||0)}:p));
+  const toggleTrack=(id:number,on:boolean)=>onChange(products.map((p)=>p.id===id?{...p,trackStock:on,stock:p.stock||0,minStock:p.minStock||0}:p));
+
+  const visible=products
+    .filter((p)=>p.name.toLowerCase().includes(query.trim().toLowerCase())||p.category.toLowerCase().includes(query.trim().toLowerCase()))
+    .filter((p)=>!onlyLow||(p.trackStock&&(p.stock||0)<=(p.minStock||0)))
+    .sort((a,b)=>Number(!!b.trackStock)-Number(!!a.trackStock));
+
+  return <div className="integrated-view">
+    <div className="integrated-heading">
+      <div><p>INVENTÁRIO · CONTROLE</p><h1>Estoque</h1><span>Ajuste as quantidades direto na lista. Simples e rápido.</span></div>
+      <b className={low.length?"stock-alert on":"stock-alert"}>{low.length} {low.length===1?"alerta":"alertas"}</b>
+    </div>
+
+    <div className="stock-summary">
+      <article><small>Controlados</small><strong>{tracked.length}</strong></article>
+      <article><small>Estoque baixo</small><strong className={low.length?"red":""}>{low.length}</strong></article>
+      <article><small>Unidades totais</small><strong>{totalUnits}</strong></article>
+    </div>
+
+    <div className="stock-toolbar">
+      <div className="stock-search"><Search size={15}/><input placeholder="Buscar produto ou categoria" value={query} onChange={(e)=>setQuery(e.target.value)}/></div>
+      <label className="stock-filter"><input type="checkbox" checked={onlyLow} onChange={(e)=>setOnlyLow(e.target.checked)}/> Apenas estoque baixo</label>
+    </div>
+
+    <div className="stock-simple">
+      {visible.map((product)=>{
+        const current=Number(product.stock||0);
+        const min=Number(product.minStock||0);
+        const state=!product.trackStock?"off":current<=0?"out":current<=min?"low":"ok";
+        return <article key={product.id} className={`stock-row stock-${state}`}>
+          <ProductImage product={product}/>
+          <div className="stock-info">
+            <small>{product.category}</small>
+            <h3>{product.name}</h3>
+            {product.trackStock
+              ? <span className={state==="out"?"red":state==="low"?"amber":"green"}>{state==="out"?"Esgotado":state==="low"?"Repor estoque":"Disponível"}</span>
+              : <span className="muted">Estoque não controlado</span>}
+          </div>
+          {product.trackStock?<>
+            <div className="stock-counter">
+              <button aria-label="Diminuir" onClick={()=>setStock(product.id,current-1)}><Minus size={14}/></button>
+              <input type="number" min={0} value={current} onChange={(e)=>setStock(product.id,Number(e.target.value))}/>
+              <button aria-label="Aumentar" onClick={()=>setStock(product.id,current+1)}><Plus size={14}/></button>
+            </div>
+            <div className="stock-quick">
+              <button onClick={()=>setStock(product.id,current+5)}>+5</button>
+              <button onClick={()=>setStock(product.id,current+10)}>+10</button>
+              <label>Mínimo <input type="number" min={0} value={min} onChange={(e)=>setMin(product.id,Number(e.target.value))}/></label>
+            </div>
+          </>:<div className="stock-off"><p>Ative para controlar as unidades deste produto.</p></div>}
+          <label className="stock-switch" title="Controlar estoque">
+            <input type="checkbox" checked={!!product.trackStock} onChange={(e)=>toggleTrack(product.id,e.target.checked)}/>
+            <span/>
+          </label>
+        </article>;
+      })}
+      {!visible.length&&<div className="integrated-empty"><Store/><h3>Nenhum produto encontrado</h3><p>Ajuste a busca ou desmarque o filtro.</p></div>}
+    </div>
+  </div>;
 }
 
 function IntegratedCommands({commands,setCommands,onCharge,products}:{commands:IntegratedCommand[];setCommands:React.Dispatch<React.SetStateAction<IntegratedCommand[]>>;onCharge:(command:IntegratedCommand)=>void;products:Product[]}) {
