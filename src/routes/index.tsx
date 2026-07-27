@@ -66,23 +66,23 @@ function ProductImage({product,className=""}:{product:Product;className?:string}
 }
 
 const initialProducts: Product[] = [
-  { id: 9,  category: "Espetinhos", name: "Carne",             price: 10, image: "/products/generated/espeto-carne.png",        description: "Espetinho de carne preparado na brasa e servido no ponto escolhido.", stock: 30, minStock: 8, trackStock: true },
-  { id: 12, category: "Espetinhos", name: "Linguiça",          price: 10, image: "/products/generated/espeto-linguica.png",     description: "Espetinho de linguiça assada na brasa, dourada e suculenta.",         stock: 30, minStock: 8, trackStock: true },
-  { id: 11, category: "Espetinhos", name: "Frango com Bacon",  price: 12, image: "/products/generated/espeto-frango-bacon.png", description: "Cubos de frango com bacon, grelhados até ficarem dourados e suculentos.", stock: 30, minStock: 8, trackStock: true },
-  { id: 10, category: "Espetinhos", name: "Carne com Bacon",   price: 14, tag: "DESTAQUE", image: "/products/generated/espeto-carne-bacon.png", description: "Espetinho de carne intercalada com bacon, assado na brasa.",       stock: 30, minStock: 8, trackStock: true },
+  { id: 9,  category: "Espetinhos", name: "Carne",             price: 10, image: "/products/generated/espeto-carne.webp",        description: "Espetinho de carne preparado na brasa e servido no ponto escolhido.", stock: 30, minStock: 8, trackStock: true },
+  { id: 12, category: "Espetinhos", name: "Linguiça",          price: 10, image: "/products/generated/espeto-linguica.webp",     description: "Espetinho de linguiça assada na brasa, dourada e suculenta.",         stock: 30, minStock: 8, trackStock: true },
+  { id: 11, category: "Espetinhos", name: "Frango com Bacon",  price: 12, image: "/products/generated/espeto-frango-bacon.webp", description: "Cubos de frango com bacon, grelhados até ficarem dourados e suculentos.", stock: 30, minStock: 8, trackStock: true },
+  { id: 10, category: "Espetinhos", name: "Carne com Bacon",   price: 14, tag: "DESTAQUE", image: "/products/generated/espeto-carne-bacon.webp", description: "Espetinho de carne intercalada com bacon, assado na brasa.",       stock: 30, minStock: 8, trackStock: true },
 
   { id: 20, category: "Acompanhamentos", name: "Farofa",       price: 3, image: "", description: "Farofa crocante da casa.",           stock: 40, minStock: 10, trackStock: true },
   { id: 21, category: "Acompanhamentos", name: "Molho Verde",  price: 3, image: "", description: "Molho verde fresco da casa.",        stock: 40, minStock: 10, trackStock: true },
   { id: 22, category: "Acompanhamentos", name: "Vinagrete",    price: 5, image: "", description: "Vinagrete tradicional bem temperado.", stock: 40, minStock: 10, trackStock: true },
   { id: 23, category: "Acompanhamentos", name: "Arroz",        price: 5, image: "", description: "Porção de arroz soltinho.",           stock: 40, minStock: 10, trackStock: true },
 
-  { id: 14, category: "Bebidas", name: "Água s/ Gás",     price: 3,  image: "/products/generated/agua-sem-gas.png",  description: "Água mineral sem gás, gelada.",                stock: 30, minStock: 8, trackStock: true },
-  { id: 13, category: "Bebidas", name: "Água c/ Gás",     price: 4,  image: "/products/generated/agua-com-gas.png",  description: "Água mineral com gás, gelada.",                stock: 30, minStock: 8, trackStock: true },
-  { id: 18, category: "Bebidas", name: "Fanta Lata",      price: 6,  image: "/products/generated/fanta-lata.png",    description: "Refrigerante Fanta em lata, servido gelado.",  stock: 30, minStock: 8, trackStock: true },
-  { id: 19, category: "Bebidas", name: "Guaraná Lata",    price: 6,  image: "/products/generated/guarana-lata.png",  description: "Refrigerante Guaraná em lata, servido gelado.",stock: 30, minStock: 8, trackStock: true },
-  { id: 17, category: "Bebidas", name: "Coca Cola Lata",  price: 6,  image: "/products/generated/coca-cola-lata.png",description: "Refrigerante Coca-Cola em lata, servido gelado.",stock: 30, minStock: 8, trackStock: true },
-  { id: 16, category: "Bebidas", name: "Coca Cola 1L",    price: 10, image: "/products/generated/coca-cola-1l.png",  description: "Refrigerante Coca-Cola 1 litro, servido gelado.",stock: 20, minStock: 5, trackStock: true },
-  { id: 15, category: "Bebidas", name: "Coca Cola 1,5L",  price: 12, image: "/products/generated/coca-cola-15l.png", description: "Refrigerante Coca-Cola 1,5 litro, servido gelado.",stock: 20, minStock: 5, trackStock: true },
+  { id: 14, category: "Bebidas", name: "Água s/ Gás",     price: 3,  image: "/products/generated/agua-sem-gas.webp",  description: "Água mineral sem gás, gelada.",                stock: 30, minStock: 8, trackStock: true },
+  { id: 13, category: "Bebidas", name: "Água c/ Gás",     price: 4,  image: "/products/generated/agua-com-gas.webp",  description: "Água mineral com gás, gelada.",                stock: 30, minStock: 8, trackStock: true },
+  { id: 18, category: "Bebidas", name: "Fanta Lata",      price: 6,  image: "/products/generated/fanta-lata.webp",    description: "Refrigerante Fanta em lata, servido gelado.",  stock: 30, minStock: 8, trackStock: true },
+  { id: 19, category: "Bebidas", name: "Guaraná Lata",    price: 6,  image: "/products/generated/guarana-lata.webp",  description: "Refrigerante Guaraná em lata, servido gelado.",stock: 30, minStock: 8, trackStock: true },
+  { id: 17, category: "Bebidas", name: "Coca Cola Lata",  price: 6,  image: "/products/generated/coca-cola-lata.webp",description: "Refrigerante Coca-Cola em lata, servido gelado.",stock: 30, minStock: 8, trackStock: true },
+  { id: 16, category: "Bebidas", name: "Coca Cola 1L",    price: 10, image: "/products/generated/coca-cola-1l.webp",  description: "Refrigerante Coca-Cola 1 litro, servido gelado.",stock: 20, minStock: 5, trackStock: true },
+  { id: 15, category: "Bebidas", name: "Coca Cola 1,5L",  price: 12, image: "/products/generated/coca-cola-15l.webp", description: "Refrigerante Coca-Cola 1,5 litro, servido gelado.",stock: 20, minStock: 5, trackStock: true },
 ];
 
 const nav = [
