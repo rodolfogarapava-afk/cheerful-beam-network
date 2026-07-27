@@ -563,3 +563,26 @@ button { cursor:pointer;touch-action:manipulation; }
   .catalog-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:9px}
   .drawer{width:100%}
 }
+
+.stock-add-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid #2a2a2a;background:#141414;color:#eee;border-radius:10px;font-size:12.5px;font-weight:600;cursor:pointer;transition:.15s}
+.stock-add-btn:hover{border-color:#f5c518;color:#f5c518}
+.stock-add-btn.primary{background:#f5c518;border-color:#f5c518;color:#0a0a0a}
+.stock-add-btn.primary:hover{background:#ffd633}
+.drawer-add{margin-left:auto;display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;border:1px solid #2a2a2a;background:#141414;color:#f5c518;cursor:pointer}
+.drawer-add:hover{background:#f5c518;color:#0a0a0a}
+.stock-drawer summary{display:flex;align-items:center;gap:10px}
+.stock-modal{max-width:460px;width:100%}
+.stock-modal header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #1e1e1e}
+.stock-modal header h3{margin:0;font-size:16px;color:#fff}
+.stock-modal header button{background:none;border:none;color:#888;font-size:22px;cursor:pointer}
+.stock-modal-body{padding:20px;display:flex;flex-direction:column;gap:14px}
+.stock-modal-body label{display:flex;flex-direction:column;gap:6px;font-size:12px;color:#aaa;font-weight:600}
+.stock-modal-body input,.stock-modal-body select{background:#0f0f0f;border:1px solid #262626;color:#fff;padding:9px 11px;border-radius:8px;font-size:13.5px}
+.stock-modal-body input:focus,.stock-modal-body select:focus{outline:none;border-color:#f5c518}
+.stock-modal-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.stock-modal-body .inline-check{flex-direction:row;align-items:center;gap:8px;color:#ddd;font-size:13px;font-weight:500}
+.stock-modal-hint{margin:0;color:#888;font-size:12px;line-height:1.5}
+.stock-modal footer{display:flex;justify-content:flex-end;gap:10px;padding:14px 20px;border-top:1px solid #1e1e1e}
+.stock-modal footer button{padding:9px 16px;border-radius:8px;border:1px solid #2a2a2a;background:#141414;color:#ddd;font-weight:600;font-size:13px;cursor:pointer}
+.stock-modal footer button.primary{background:#f5c518;border-color:#f5c518;color:#0a0a0a}
+.stock-modal footer button.primary:disabled{opacity:.4;cursor:not-allowed}
