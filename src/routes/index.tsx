@@ -54,10 +54,8 @@ type Product = {
 };
 
 const stockFallbackImages:Record<string,string>={
-  Entradas:"https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=600&q=82",
-  Saladas:"https://images.unsplash.com/photo-1546793665-c74683f339c1?auto=format&fit=crop&w=600&q=82",
-  Lanches:"https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=82",
   Espetinhos:"https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&w=600&q=82",
+  Acompanhamentos:"https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=600&q=82",
   Bebidas:"https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=600&q=82",
 };
 
@@ -67,226 +65,35 @@ function ProductImage({product,className=""}:{product:Product;className?:string}
 }
 
 const initialProducts: Product[] = [
-  {
-    id: 1,
-    category: "Lanches",
-    name: "Smash Fenda do Biquíni",
-    price: 37,
-    tag: "NOVO",
-    image:
-      "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=900&q=88",
-    description:
-      "Pão brioche macio, burger smash de 100g, queijo muçarela, bacon crocante, alface e um generoso abacaxi grelhado caramelizado no mel.",
-  },
-  {
-    id: 2,
-    category: "Lanches",
-    name: "Smash Pac Baby",
-    price: 29,
-    image:
-      "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=900&q=88",
-    description:
-      "Pão brioche, burger smash de 100g, maionese da casa e queijo muçarela. Acompanha batata frita crocante.",
-  },
-  {
-    id: 3,
-    category: "Lanches",
-    name: "Smash Bacon Melt",
-    price: 42,
-    tag: "MAIS PEDIDO",
-    image:
-      "https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?auto=format&fit=crop&w=900&q=88",
-    description:
-      "Dois burgers smash, cheddar cremoso, cebola caramelizada, bacon crocante e nosso molho secreto no brioche.",
-  },
-  {
-    id: 4,
-    category: "Vinhos",
-    name: "Malbec Reserva",
-    price: 79,
-    tag: "DESTAQUE",
-    image:
-      "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=900&q=88",
-    description:
-      "Vinho argentino encorpado, com notas de frutas negras, especiarias e final elegante. Garrafa 750ml.",
-  },
-  {
-    id: 5,
-    category: "Vinhos",
-    name: "Cabernet Sauvignon",
-    price: 72,
-    image:
-      "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&w=900&q=88",
-    description:
-      "Tinto seco de corpo médio, aroma de frutas maduras e taninos macios. Perfeito para acompanhar burgers.",
-  },
-  {
-    id: 6,
-    category: "Entradas",
-    name: "Batata Rústica",
-    price: 24,
-    tag: "NOVO",
-    image:
-      "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=900&q=88",
-    description:
-      "Batatas com casca, crocantes por fora e macias por dentro, finalizadas com páprica e ervas.",
-  },
-  {
-    id: 7,
-    category: "Entradas",
-    name: "Onion Rings",
-    price: 26,
-    image:
-      "https://images.unsplash.com/photo-1639024471283-03518883512d?auto=format&fit=crop&w=900&q=88",
-    description:
-      "Anéis de cebola empanados e crocantes, servidos com maionese defumada da casa.",
-  },
-  {
-    id: 8,
-    category: "Saladas",
-    name: "Salada House",
-    price: 31,
-    image:
-      "https://images.unsplash.com/photo-1546793665-c74683f339c1?auto=format&fit=crop&w=900&q=88",
-    description:
-      "Mix de folhas frescas, tomate-cereja, queijo, cebola roxa, croutons e molho cítrico.",
-  },
-  {
-    id: 9,
-    category: "Espetinhos",
-    name: "Carne",
-    price: 10,
-    image: "/products/generated/espeto-carne.png",
-    description: "Espetinho de carne preparado na brasa e servido no ponto escolhido.",
-    stock: 30,
-    minStock: 8,
-    trackStock: true,
-  },
-  {
-    id: 10,
-    category: "Espetinhos",
-    name: "Carne com Bacon",
-    price: 14,
-    tag: "DESTAQUE",
-    image: "/products/generated/espeto-carne-bacon.png",
-    description: "Espetinho de carne intercalada com bacon, assado na brasa.",
-    stock: 30,
-    minStock: 8,
-    trackStock: true,
-  },
-  {
-    id: 11,
-    category: "Espetinhos",
-    name: "Frango com Bacon",
-    price: 12,
-    image: "/products/generated/espeto-frango-bacon.png",
-    description: "Cubos de frango com bacon, grelhados até ficarem dourados e suculentos.",
-    stock: 30,
-    minStock: 8,
-    trackStock: true,
-  },
-  {
-    id: 12,
-    category: "Espetinhos",
-    name: "Linguiça",
-    price: 10,
-    image: "/products/generated/espeto-linguica.png",
-    description: "Espetinho de linguiça assada na brasa, dourada e suculenta.",
-    stock: 30,
-    minStock: 8,
-    trackStock: true,
-  },
-  {
-    id: 13,
-    category: "Bebidas",
-    name: "Água c/ Gás",
-    price: 4,
-    image: "/products/generated/agua-com-gas.png",
-    description: "Água mineral com gás, gelada.",
-    stock: 30,
-    minStock: 8,
-    trackStock: true,
-  },
-  {
-    id: 14,
-    category: "Bebidas",
-    name: "Água s/ Gás",
-    price: 3,
-    image: "/products/generated/agua-sem-gas.png",
-    description: "Água mineral sem gás, gelada.",
-    stock: 30,
-    minStock: 8,
-    trackStock: true,
-  },
-  {
-    id: 15,
-    category: "Bebidas",
-    name: "Coca Cola 1,5L",
-    price: 12,
-    image: "/products/generated/coca-cola-15l.png",
-    description: "Refrigerante Coca-Cola 1,5 litro, servido gelado.",
-    stock: 20,
-    minStock: 5,
-    trackStock: true,
-  },
-  {
-    id: 16,
-    category: "Bebidas",
-    name: "Coca Cola 1L",
-    price: 10,
-    image: "/products/generated/coca-cola-1l.png",
-    description: "Refrigerante Coca-Cola 1 litro, servido gelado.",
-    stock: 20,
-    minStock: 5,
-    trackStock: true,
-  },
-  {
-    id: 17,
-    category: "Bebidas",
-    name: "Coca Cola Lata",
-    price: 6,
-    image: "/products/generated/coca-cola-lata.png",
-    description: "Refrigerante Coca-Cola em lata, servido gelado.",
-    stock: 30,
-    minStock: 8,
-    trackStock: true,
-  },
-  {
-    id: 18,
-    category: "Bebidas",
-    name: "Fanta Lata",
-    price: 6,
-    image: "/products/generated/fanta-lata.png",
-    description: "Refrigerante Fanta em lata, servido gelado.",
-    stock: 30,
-    minStock: 8,
-    trackStock: true,
-  },
-  {
-    id: 19,
-    category: "Bebidas",
-    name: "Guaraná Lata",
-    price: 6,
-    image: "/products/generated/guarana-lata.png",
-    description: "Refrigerante Guaraná em lata, servido gelado.",
-    stock: 30,
-    minStock: 8,
-    trackStock: true,
-  },
+  { id: 9,  category: "Espetinhos", name: "Carne",             price: 10, image: "/products/generated/espeto-carne.png",        description: "Espetinho de carne preparado na brasa e servido no ponto escolhido.", stock: 30, minStock: 8, trackStock: true },
+  { id: 12, category: "Espetinhos", name: "Linguiça",          price: 10, image: "/products/generated/espeto-linguica.png",     description: "Espetinho de linguiça assada na brasa, dourada e suculenta.",         stock: 30, minStock: 8, trackStock: true },
+  { id: 11, category: "Espetinhos", name: "Frango com Bacon",  price: 12, image: "/products/generated/espeto-frango-bacon.png", description: "Cubos de frango com bacon, grelhados até ficarem dourados e suculentos.", stock: 30, minStock: 8, trackStock: true },
+  { id: 10, category: "Espetinhos", name: "Carne com Bacon",   price: 14, tag: "DESTAQUE", image: "/products/generated/espeto-carne-bacon.png", description: "Espetinho de carne intercalada com bacon, assado na brasa.",       stock: 30, minStock: 8, trackStock: true },
+
+  { id: 20, category: "Acompanhamentos", name: "Farofa",       price: 3, image: "", description: "Farofa crocante da casa.",           stock: 40, minStock: 10, trackStock: true },
+  { id: 21, category: "Acompanhamentos", name: "Molho Verde",  price: 3, image: "", description: "Molho verde fresco da casa.",        stock: 40, minStock: 10, trackStock: true },
+  { id: 22, category: "Acompanhamentos", name: "Vinagrete",    price: 5, image: "", description: "Vinagrete tradicional bem temperado.", stock: 40, minStock: 10, trackStock: true },
+  { id: 23, category: "Acompanhamentos", name: "Arroz",        price: 5, image: "", description: "Porção de arroz soltinho.",           stock: 40, minStock: 10, trackStock: true },
+
+  { id: 14, category: "Bebidas", name: "Água s/ Gás",     price: 3,  image: "/products/generated/agua-sem-gas.png",  description: "Água mineral sem gás, gelada.",                stock: 30, minStock: 8, trackStock: true },
+  { id: 13, category: "Bebidas", name: "Água c/ Gás",     price: 4,  image: "/products/generated/agua-com-gas.png",  description: "Água mineral com gás, gelada.",                stock: 30, minStock: 8, trackStock: true },
+  { id: 18, category: "Bebidas", name: "Fanta Lata",      price: 6,  image: "/products/generated/fanta-lata.png",    description: "Refrigerante Fanta em lata, servido gelado.",  stock: 30, minStock: 8, trackStock: true },
+  { id: 19, category: "Bebidas", name: "Guaraná Lata",    price: 6,  image: "/products/generated/guarana-lata.png",  description: "Refrigerante Guaraná em lata, servido gelado.",stock: 30, minStock: 8, trackStock: true },
+  { id: 17, category: "Bebidas", name: "Coca Cola Lata",  price: 6,  image: "/products/generated/coca-cola-lata.png",description: "Refrigerante Coca-Cola em lata, servido gelado.",stock: 30, minStock: 8, trackStock: true },
+  { id: 16, category: "Bebidas", name: "Coca Cola 1L",    price: 10, image: "/products/generated/coca-cola-1l.png",  description: "Refrigerante Coca-Cola 1 litro, servido gelado.",stock: 20, minStock: 5, trackStock: true },
+  { id: 15, category: "Bebidas", name: "Coca Cola 1,5L",  price: 12, image: "/products/generated/coca-cola-15l.png", description: "Refrigerante Coca-Cola 1,5 litro, servido gelado.",stock: 20, minStock: 5, trackStock: true },
 ];
 
 const nav = [
-  { label: "Entradas", icon: Utensils },
-  { label: "Saladas", icon: CircleUserRound },
-  { label: "Lanches", icon: ShoppingBag },
   { label: "Espetinhos", icon: Utensils },
+  { label: "Acompanhamentos", icon: ShoppingBag },
   { label: "Bebidas", icon: Wine },
 ];
 
 function Home() {
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [categories, setCategories] = useState<string[]>(nav.map((item) => item.label));
-  const [activeMain, setActiveMain] = useState("Lanches");
+  const [activeMain, setActiveMain] = useState("Espetinhos");
   const [cart, setCart] = useState<Record<number, number>>({});
   const [modal, setModal] = useState<"waiter" | "review" | "cart" | "about" | "commands" | "payment" | "doneness" | null>(null);
   const [pendingMeatId, setPendingMeatId] = useState<number | null>(null);
@@ -313,40 +120,22 @@ function Home() {
 
   useEffect(() => {
     initAudioContext();
+    const menuVersionKey = "burguer-house-v30-espetinhos-menu";
+    const menuDone = window.localStorage.getItem(menuVersionKey);
     const saved = window.localStorage.getItem("burguer-house-products");
-    const migrationDone = window.localStorage.getItem("burguer-house-v11-wine-removed");
-    const githubMenuDone = window.localStorage.getItem("burguer-house-v12-github-menu");
-    const generatedImagesDone = window.localStorage.getItem("burguer-house-v25-generated-product-images");
-    const importedProducts = initialProducts.filter((product) => ["Espetinhos", "Bebidas"].includes(product.category));
-    if (saved) {
-      try {
-        const parsed:Product[]=JSON.parse(saved);
-        let migrated=migrationDone?parsed:parsed.filter((product)=>product.category!=="Vinhos");
-        if(!githubMenuDone){
-          const existingNames=new Set(migrated.map((product)=>product.name.trim().toLocaleLowerCase("pt-BR")));
-          migrated=[...migrated,...importedProducts.filter((product)=>!existingNames.has(product.name.toLocaleLowerCase("pt-BR")))];
-        }
-        if(!generatedImagesDone){
-          const generatedImagesById = new Map(importedProducts.map((product) => [product.id, product.image]));
-          migrated=migrated.map((product)=>generatedImagesById.has(product.id)?{...product,image:generatedImagesById.get(product.id)!}:product);
-        }
-        setProducts(migrated);
-        if(!migrationDone||!githubMenuDone||!generatedImagesDone)window.localStorage.setItem("burguer-house-products",JSON.stringify(migrated));
-      } catch {}
-    } else setProducts(initialProducts.filter((product)=>product.category!=="Vinhos"));
-    const savedCategories = window.localStorage.getItem("burguer-house-categories");
-    if (savedCategories) {
-      try {
-        const parsed:string[]=JSON.parse(savedCategories);
-        let migrated=migrationDone?parsed:parsed.filter((category)=>category!=="Vinhos");
-        if(!githubMenuDone)migrated=[...migrated,...["Espetinhos","Bebidas"].filter((category)=>!migrated.includes(category))];
-        setCategories(migrated);
-        if(!migrationDone||!githubMenuDone)window.localStorage.setItem("burguer-house-categories",JSON.stringify(migrated));
-      } catch {}
+    if (!menuDone) {
+      setProducts(initialProducts);
+      setCategories(nav.map((item) => item.label));
+      window.localStorage.setItem("burguer-house-products", JSON.stringify(initialProducts));
+      window.localStorage.setItem("burguer-house-categories", JSON.stringify(nav.map((item) => item.label)));
+      window.localStorage.setItem(menuVersionKey, "1");
+    } else if (saved) {
+      try { setProducts(JSON.parse(saved)); } catch {}
+      const savedCategories = window.localStorage.getItem("burguer-house-categories");
+      if (savedCategories) { try { setCategories(JSON.parse(savedCategories)); } catch {} }
+    } else {
+      setProducts(initialProducts);
     }
-    if(!migrationDone)window.localStorage.setItem("burguer-house-v11-wine-removed","1");
-    if(!githubMenuDone)window.localStorage.setItem("burguer-house-v12-github-menu","1");
-    if(!generatedImagesDone)window.localStorage.setItem("burguer-house-v25-generated-product-images","1");
     try {
       const commands=window.localStorage.getItem("burguer-house-commands");
       const sales=window.localStorage.getItem("burguer-house-sales");
@@ -407,26 +196,13 @@ function Home() {
     }];
   });
   const sectionCopy: Record<string, { title: string; description: string }> = {
-    Lanches: {
-      title: "Lanches",
-      description:
-        "Mais fininhos, crocantes por fora, suculentos por dentro — com opção simples ou dupla.",
-    },
-    Vinhos: {
-      title: "Vinhos",
-      description: "Rótulos escolhidos para harmonizar com os sabores marcantes da casa.",
-    },
-    Entradas: {
-      title: "Entradas",
-      description: "Porções crocantes e saborosas para começar ou compartilhar.",
-    },
-    Saladas: {
-      title: "Saladas",
-      description: "Combinações leves, frescas e preparadas na hora.",
-    },
     Espetinhos: {
       title: "Espetinhos",
-      description: "Sabores preparados na brasa e servidos no ponto escolhido.",
+      description: "Preparados na brasa e servidos no ponto escolhido. Acompanham farofa e mandioca.",
+    },
+    Acompanhamentos: {
+      title: "Acompanhamentos",
+      description: "Porções para incrementar o seu pedido.",
     },
     Bebidas: {
       title: "Bebidas",
