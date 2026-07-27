@@ -159,6 +159,18 @@ function Home() {
     setProducts(next);
     if (typeof window !== "undefined") window.localStorage.setItem("burguer-house-products", JSON.stringify(next));
   };
+  const adjustStock = (deltas: { name: string; qty: number }[]) => {
+    setProducts((prev) => {
+      const next = prev.map((p) => {
+        if (!p.trackStock) return p;
+        const delta = deltas.filter((d) => d.name === p.name).reduce((sum, d) => sum + d.qty, 0);
+        if (!delta) return p;
+        return { ...p, stock: Math.max(0, Number(p.stock || 0) + delta) };
+      });
+      if (typeof window !== "undefined") window.localStorage.setItem("burguer-house-products", JSON.stringify(next));
+      return next;
+    });
+  };
   const persistCategories = (next: string[]) => {
     setCategories(next);
     window.localStorage.setItem("burguer-house-categories", JSON.stringify(next));
@@ -325,7 +337,7 @@ function Home() {
         <section className="content">
           {systemView === "products" ? <IntegratedProducts products={products} categories={categories} onChange={persistProducts} onAddCategory={(name)=>persistCategories([...categories,name])} onRenameCategory={renameCategory} onDeleteCategory={(name)=>{const next=categories.filter((c)=>c!==name);persistCategories(next);if(activeMain===name)setActiveMain(next[0]||"")}} /> :
           systemView === "stock" ? <IntegratedStock products={products} onChange={persistProducts} /> :
-          systemView === "commands" ? <IntegratedCommands commands={savedCommands} setCommands={setSavedCommands} products={products} onCharge={(command) => { setCustomerName(command.name); setPaymentTotal(command.total); setPaymentItems(command.items); setPaymentCommandId(command.id); setPaymentCommandBackup(command); setModal("payment"); }} /> :
+          systemView === "commands" ? <IntegratedCommands commands={savedCommands} setCommands={setSavedCommands} products={products} adjustStock={adjustStock} onCharge={(command) => { setCustomerName(command.name); setPaymentTotal(command.total); setPaymentItems(command.items); setPaymentCommandId(command.id); setPaymentCommandBackup(command); setModal("payment"); }} /> :
           systemView === "cash" ? <IntegratedCash sales={salesHistory} expenses={expenses} onAddExpense={() => { const description=window.prompt("Descrição do custo"); if(!description)return; const value=window.prompt("Valor do custo"); const amount=Number((value||"").replace(",",".")); if(amount>0)setExpenses((all)=>[...all,{id:Date.now(),description,amount,createdAt:Date.now()}]); }} /> :
           systemView === "reports" ? <IntegratedReports sales={salesHistory} expenses={expenses} commands={savedCommands} /> : <>
           <div className="category-strip menu-category-strip" aria-label="Categorias do cardápio">
@@ -468,6 +480,7 @@ function Home() {
                         const name=customerName.trim();
                         const newItems=currentCartItems.map((item)=>({...item,delivered:false}));
                         setSavedCommands((current)=>mergeOpenCommands([...current,{id:Date.now(),name,count,total,createdAt:Date.now(),items:newItems}]));
+                        adjustStock(newItems.map((item)=>({name:item.name,qty:-item.qty})));
                         printKitchenTicket(name, newItems);
                         playNotificationSound("sale");
                         setCart({}); setCartDetails({}); setModal("commands");
@@ -514,8 +527,7 @@ function Home() {
                   const sale={id:Date.now(),name:customerName,total:paymentTotal,method:paymentMethod,createdAt:Date.now(),items:paymentItems};
                   setSalesHistory((all)=>[...all,sale]);
                   if(paymentCommandId!==null)setSavedCommands((all)=>all.filter((command)=>command.id!==paymentCommandId));
-                  const updated=products.map((product)=>{const sold=paymentItems.find((item)=>item.name===product.name);return sold&&product.trackStock?{...product,stock:Math.max(0,Number(product.stock||0)-sold.qty)}:product});
-                  persistProducts(updated); printCustomerReceipt(sale); playNotificationSound("success"); setCart({}); setCartDetails({}); setCashReceived(""); setPaymentCommandId(null); setPaymentCommandBackup(null); setSent(true); setModal(null);
+                  printCustomerReceipt(sale); playNotificationSound("success"); setCart({}); setCartDetails({}); setCashReceived(""); setPaymentCommandId(null); setPaymentCommandBackup(null); setSent(true); setModal(null);
                 }}>CONFIRMAR PAGAMENTO E IMPRIMIR</button>
               </>
             )}
@@ -939,7 +951,7 @@ function IntegratedStock({products,onChange}:{products:Product[];onChange:(produ
   </div>;
 }
 
-function IntegratedCommands({commands,setCommands,onCharge,products}:{commands:IntegratedCommand[];setCommands:React.Dispatch<React.SetStateAction<IntegratedCommand[]>>;onCharge:(command:IntegratedCommand)=>void;products:Product[]}) {
+function IntegratedCommands({commands,setCommands,onCharge,products,adjustStock}:{commands:IntegratedCommand[];setCommands:React.Dispatch<React.SetStateAction<IntegratedCommand[]>>;onCharge:(command:IntegratedCommand)=>void;products:Product[];adjustStock:(deltas:{name:string;qty:number}[])=>void}) {
   const [confirmation,setConfirmation]=useState<{action:"print"|"cancel";command:IntegratedCommand}|null>(null);
   const [editing,setEditing]=useState<IntegratedCommand|null>(null);
   const editCategories=useMemo(()=>Array.from(new Set(products.map((product)=>product.category))),[products]);
@@ -947,7 +959,10 @@ function IntegratedCommands({commands,setCommands,onCharge,products}:{commands:I
   const confirmAction=()=>{
     if(!confirmation)return;
     if(confirmation.action==="print")printKitchenTicket(confirmation.command.name,confirmation.command.items);
-    else setCommands((all)=>all.filter((command)=>command.id!==confirmation.command.id));
+    else {
+      adjustStock(confirmation.command.items.map((item)=>({name:item.name,qty:item.qty})));
+      setCommands((all)=>all.filter((command)=>command.id!==confirmation.command.id));
+    }
     setConfirmation(null);
   };
   const [pendingChanges,setPendingChanges]=useState<OrderChange[]>([]);
@@ -978,17 +993,25 @@ function IntegratedCommands({commands,setCommands,onCharge,products}:{commands:I
   };
   const changeItemQty=(command:IntegratedCommand,index:number,delta:number)=>{
     const item=command.items[index];
+    if(delta>0){
+      const product=products.find((p)=>p.name===item.name);
+      if(product?.trackStock&&Number(product.stock||0)<=0)return;
+    }
     const nextQty=item.qty+delta;
     const nextItems=nextQty<=0?command.items.filter((_,i)=>i!==index):command.items.map((it,i)=>i===index?{...it,qty:nextQty}:it);
+    adjustStock([{name:item.name,qty:-delta}]);
     applyEdit(command,nextItems,{type:delta>0?"adicionado":"removido",name:item.name,qty:1,notes:item.detail});
   };
   const removeItem=(command:IntegratedCommand,index:number)=>{
     const item=command.items[index];
+    adjustStock([{name:item.name,qty:item.qty}]);
     applyEdit(command,command.items.filter((_,i)=>i!==index),{type:"removido",name:item.name,qty:item.qty,notes:item.detail});
   };
   const addProductToCommand=(command:IntegratedCommand,product:Product)=>{
+    if(product.trackStock&&Number(product.stock||0)<=0)return;
     const existingIndex=command.items.findIndex((item)=>item.name===product.name&&!item.detail);
     const nextItems=existingIndex>=0?command.items.map((item,i)=>i===existingIndex?{...item,qty:item.qty+1}:item):[...command.items,{name:product.name,qty:1,price:product.price,detail:"",delivered:false}];
+    adjustStock([{name:product.name,qty:-1}]);
     applyEdit(command,nextItems,{type:"adicionado",name:product.name,qty:1});
   };
   return <div className="integrated-view">
