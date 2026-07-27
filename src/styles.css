@@ -694,4 +694,17 @@ button { cursor:pointer;touch-action:manipulation; }
   .stock-toolbar .stock-filter,
   .stock-toolbar .stock-add-btn { width: 100%; justify-content: flex-start; }
   .stock-toolbar .stock-add-btn { justify-content: center; }
+
+  /* Smaller product cards on mobile */
+  .product-card { height:auto;min-height:auto;grid-template-columns:130px 1fr; }
+  .photo { width:130px;height:150px;min-height:150px; }
+  .photo img { height:150px; }
+  .product-info { padding:14px;grid-template-columns:1fr 110px;gap:12px; }
+  .product-info h2 { font-size:15px;margin-bottom:6px; }
+  .product-info p { font-size:11px;margin-bottom:6px; }
+  .product-info small { font-size:10px; }
+  .price strong { font-size:15px; }
+  .add-button { min-height:36px;padding:0 10px;font-size:9px; }
+  .stepper button { width:30px;height:34px; }
+  .stepper b { width:26px; }
 }
