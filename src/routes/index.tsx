@@ -21,7 +21,7 @@ import {
   X,
   ChevronDown,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import { sendOrderTicketToPrinter, sendOrderUpdateToPrinter, sendReceiptToPrinter, type OrderChange } from "@/lib/printReceipt";
 import { generateReportPdf } from "@/lib/reportPdf";
 import { initAudioContext, playNotificationSound } from "@/lib/sounds";
@@ -54,15 +54,22 @@ type Product = {
   trackStock?: boolean;
 };
 
-const stockFallbackImages:Record<string,string>={
-  Espetinhos:"https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&w=600&q=82",
-  Acompanhamentos:"https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=600&q=82",
-  Bebidas:"https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=600&q=82",
-};
+// Tiny inline SVG data-URI fallback (no network hit)
+const FALLBACK_IMG="data:image/svg+xml;utf8,"+encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><rect width='120' height='120' fill='%231a1a1a'/><text x='60' y='66' font-family='Arial' font-size='42' text-anchor='middle' fill='%23f5c518'>🍢</text></svg>`);
 
-function ProductImage({product,className=""}:{product:Product;className?:string}){
-  const fallback=stockFallbackImages[product.category]||stockFallbackImages.Entradas;
-  return <img className={className} src={product.image?.trim()||fallback} alt={product.name} loading="eager" decoding="async" fetchPriority="high" width={600} height={600} onError={(event)=>{const image=event.currentTarget;if(image.src!==fallback)image.src=fallback}}/>;
+const ProductImage=memo(function ProductImage({product,className="",priority=false}:{product:Product;className?:string;priority?:boolean}){
+  const src=product.image?.trim()||FALLBACK_IMG;
+  return <img className={className} src={src} alt={product.name} loading={priority?"eager":"lazy"} decoding="async" fetchPriority={priority?"high":"low"} width={600} height={600} onError={(event)=>{const image=event.currentTarget;if(image.src!==FALLBACK_IMG)image.src=FALLBACK_IMG}}/>;
+});
+
+function useDebouncedStorage<T>(key:string,value:T,ready:boolean,delay=400){
+  const first=useRef(true);
+  useEffect(()=>{
+    if(!ready)return;
+    if(first.current){first.current=false;return;}
+    const t=setTimeout(()=>{try{window.localStorage.setItem(key,JSON.stringify(value))}catch{}},delay);
+    return()=>clearTimeout(t);
+  },[key,value,ready,delay]);
 }
 
 const initialProducts: Product[] = [
@@ -147,9 +154,9 @@ function Home() {
     } catch {}
     setStorageReady(true);
   }, []);
-  useEffect(()=>{if(storageReady)window.localStorage.setItem("burguer-house-commands",JSON.stringify(savedCommands))},[savedCommands,storageReady]);
-  useEffect(()=>{if(storageReady)window.localStorage.setItem("burguer-house-sales",JSON.stringify(salesHistory))},[salesHistory,storageReady]);
-  useEffect(()=>{if(storageReady)window.localStorage.setItem("burguer-house-expenses",JSON.stringify(expenses))},[expenses,storageReady]);
+  useDebouncedStorage("burguer-house-commands",savedCommands,storageReady);
+  useDebouncedStorage("burguer-house-sales",salesHistory,storageReady);
+  useDebouncedStorage("burguer-house-expenses",expenses,storageReady);
   useEffect(()=>{
     if(!storageReady)return;
     const merged=mergeOpenCommands(savedCommands);
@@ -195,7 +202,7 @@ function Home() {
           product.category === activeMain &&
           product.name.toLowerCase().includes(query.toLowerCase()),
       ),
-    [query, activeMain],
+    [query, activeMain, products],
   );
   const currentCartItems = Object.entries(cart).flatMap(([id, qty]) => {
     const product = products.find((item) => item.id === Number(id));
@@ -362,11 +369,11 @@ function Home() {
           </div>
 
           <div className="product-list">
-            {filtered.map((product) => (
+            {filtered.map((product, idx) => (
               <article className="product-card" key={product.id}>
                 <div className="photo">
                   {product.tag && <span className="new-badge">{product.tag}</span>}
-                  <ProductImage product={product} />
+                  <ProductImage product={product} priority={idx<4} />
                 </div>
                 <div className="product-info">
                   <div>
