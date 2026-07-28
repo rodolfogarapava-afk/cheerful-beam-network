@@ -1016,6 +1016,7 @@ function IntegratedCommands({commands,setCommands,onCharge,products,adjustStock}
   };
   const [pendingChanges,setPendingChanges]=useState<OrderChange[]>([]);
   const [lastPrinted,setLastPrinted]=useState<OrderChange[]|null>(null);
+  const [pendingProduct,setPendingProduct]=useState<{command:IntegratedCommand;product:Product}|null>(null);
   useEffect(()=>{
     if(editing&&!commands.some((command)=>command.id===editing.id))setEditing(null);
   },[commands,editing]);
