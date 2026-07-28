@@ -1024,14 +1024,16 @@ function IntegratedCommands({commands,setCommands,onCharge,products,adjustStock}
     setConfirmation(null);
   };
   const [pendingChanges,setPendingChanges]=useState<OrderChange[]>([]);
-  const [lastPrinted,setLastPrinted]=useState<OrderChange[]|null>(null);
+  
   const [pendingProduct,setPendingProduct]=useState<{command:IntegratedCommand;product:Product}|null>(null);
+  const [pendingEditMeat,setPendingEditMeat]=useState<{command:IntegratedCommand;product:Product}|null>(null);
+  const [editDoneness,setEditDoneness]=useState("");
+  const [editMeatNote,setEditMeatNote]=useState("");
   useEffect(()=>{
     if(editing&&!commands.some((command)=>command.id===editing.id))setEditing(null);
   },[commands,editing]);
   useEffect(()=>{
     setPendingChanges([]);
-    setLastPrinted(null);
   },[editing?.id]);
   const applyEdit=(command:IntegratedCommand,nextItems:IntegratedCommand["items"],change:OrderChange)=>{
     const nextCommand={...command,items:nextItems,count:nextItems.reduce((sum,item)=>sum+item.qty,0),total:nextItems.reduce((sum,item)=>sum+item.qty*item.price,0)};
@@ -1044,11 +1046,9 @@ function IntegratedCommands({commands,setCommands,onCharge,products,adjustStock}
     });
   };
   const sendPendingChanges=()=>{
-    if(!editing)return;
-    const changes=pendingChanges.length?pendingChanges:lastPrinted;
-    if(!changes||!changes.length)return;
-    printOrderChange(editing.name,changes,editing.total);
-    if(pendingChanges.length){setLastPrinted(pendingChanges);setPendingChanges([])}
+    if(!editing||!pendingChanges.length)return;
+    printOrderChange(editing.name,pendingChanges,editing.total);
+    setPendingChanges([]);
   };
   const changeItemQty=(command:IntegratedCommand,index:number,delta:number)=>{
     const item=command.items[index];
@@ -1066,12 +1066,16 @@ function IntegratedCommands({commands,setCommands,onCharge,products,adjustStock}
     adjustStock([{name:item.name,qty:item.qty}]);
     applyEdit(command,command.items.filter((_,i)=>i!==index),{type:"removido",name:item.name,qty:item.qty,notes:item.detail});
   };
-  const addProductToCommand=(command:IntegratedCommand,product:Product)=>{
+  const addProductToCommand=(command:IntegratedCommand,product:Product,detail=""):void=>{
     if(product.trackStock&&Number(product.stock||0)<=0)return;
-    const existingIndex=command.items.findIndex((item)=>item.name===product.name&&!item.detail);
-    const nextItems=existingIndex>=0?command.items.map((item,i)=>i===existingIndex?{...item,qty:item.qty+1}:item):[...command.items,{name:product.name,qty:1,price:product.price,detail:"",delivered:false}];
+    const existingIndex=command.items.findIndex((item)=>item.name===product.name&&(item.detail||"")===detail);
+    const nextItems=existingIndex>=0?command.items.map((item,i)=>i===existingIndex?{...item,qty:item.qty+1}:item):[...command.items,{name:product.name,qty:1,price:product.price,detail,delivered:false}];
     adjustStock([{name:product.name,qty:-1}]);
-    applyEdit(command,nextItems,{type:"adicionado",name:product.name,qty:1});
+    applyEdit(command,nextItems,{type:"adicionado",name:product.name,qty:1,notes:detail||undefined});
+  };
+  const openAddProduct=(command:IntegratedCommand,product:Product)=>{
+    if(product.category==="Espetinhos"){setEditDoneness("");setEditMeatNote("");setPendingEditMeat({command,product});return}
+    setPendingProduct({command,product});
   };
   return <div className="integrated-view">
     <div className="integrated-heading"><div><p>OPERAÇÃO · TEMPO REAL</p><h1>Comandas abertas</h1><span>Acompanhe preparo, entrega, impressão e cobrança sem sair do cardápio.</span></div><b>{commands.length} abertas</b></div>
@@ -1106,11 +1110,11 @@ function IntegratedCommands({commands,setCommands,onCharge,products,adjustStock}
       </div>)}</div>:<p className="empty">Todos os itens foram removidos desta comanda.</p>}
       <h3 className="add-product-heading">Adicionar produto</h3>
       <div className="pdv-categories">{editCategories.map((category)=><button key={category} className={editCategory===category?"active":""} onClick={()=>setEditCategory(category)}>{category}</button>)}</div>
-      <div className="quick-products edit-quick-products">{products.filter((product)=>product.category===editCategory).map((product)=><button key={product.id} onClick={()=>setPendingProduct({command:editing!,product})}><b>{product.name}</b><small>R$ {product.price.toFixed(2).replace(".",",")}</small></button>)}</div>
+      <div className="quick-products edit-quick-products">{products.filter((product)=>product.category===editCategory).map((product)=><button key={product.id} onClick={()=>openAddProduct(editing!,product)}><b>{product.name}</b><small>R$ {product.price.toFixed(2).replace(".",",")}</small></button>)}</div>
       <div className="cart-actions">
         <button onClick={()=>setEditing(null)}>FECHAR</button>
-        <button className="primary" disabled={!pendingChanges.length&&!lastPrinted} onClick={sendPendingChanges}>
-          {pendingChanges.length?`IMPRIMIR ALTERAÇÕES (${pendingChanges.length})`:"REIMPRIMIR ALTERAÇÕES"}
+        <button className="primary" disabled={!pendingChanges.length} onClick={sendPendingChanges}>
+          {pendingChanges.length?`IMPRIMIR ALTERAÇÕES (${pendingChanges.length})`:"SEM ALTERAÇÕES PENDENTES"}
         </button>
       </div>
     </section></div>}
@@ -1120,6 +1124,29 @@ function IntegratedCommands({commands,setCommands,onCharge,products,adjustStock}
       <h3>Adicionar produto</h3>
       <p>Você tem certeza que quer adicionar <b>{pendingProduct.product.name}</b> na comanda <b>{pendingProduct.command.name}</b>?</p>
       <div className="confirmation-actions"><button onClick={()=>setPendingProduct(null)}>VOLTAR</button><button className="primary" onClick={()=>{addProductToCommand(pendingProduct.command,pendingProduct.product);setPendingProduct(null)}}>SIM, ADICIONAR</button></div>
+    </section></div>}
+    {pendingEditMeat&&<div className="modal-backdrop" onMouseDown={()=>setPendingEditMeat(null)}><section className="modal" onMouseDown={(event)=>event.stopPropagation()}>
+      <button className="modal-close" onClick={()=>setPendingEditMeat(null)} aria-label="Fechar"><X/></button>
+      <span className="modal-icon"><Utensils/></span>
+      <h3>Ponto da carne</h3>
+      <p><b>{pendingEditMeat.product.name}</b> — escolha como deseja o preparo para <b>{pendingEditMeat.command.name}</b>.</p>
+      <div className="doneness-options">
+        {["Mal passada","Ao ponto","Bem passada"].map((point)=>(
+          <button key={point} className={editDoneness===point?"active":""} onClick={()=>setEditDoneness(point)}>{point}</button>
+        ))}
+      </div>
+      <label className="meat-note">Observação (opcional)
+        <textarea value={editMeatNote} onChange={(event)=>setEditMeatNote(event.target.value)} placeholder="Ex.: sem sal, sem farofa..." />
+      </label>
+      <div className="doneness-actions">
+        <button className="secondary" onClick={()=>setEditDoneness("Sem ponto")}>SEM PONTO</button>
+        <button className="primary" disabled={!editDoneness} onClick={()=>{
+          const note=editMeatNote.trim();
+          const detail=[editDoneness&&`Ponto: ${editDoneness}`,note&&`Obs.: ${note}`].filter(Boolean).join(" · ");
+          addProductToCommand(pendingEditMeat.command,pendingEditMeat.product,detail);
+          setPendingEditMeat(null);setEditDoneness("");setEditMeatNote("");
+        }}>ADICIONAR</button>
+      </div>
     </section></div>}
   </div>
 }
@@ -1268,7 +1295,11 @@ async function printCustomerReceipt(sale:IntegratedSale){
   }
 }
 function orderChangeHtml(customer:string,changes:OrderChange[],newTotal?:number){
-  return `<!doctype html><html><head><meta charset="utf-8"><title>ATUALIZAÇÃO</title><style>body{font:14px monospace;width:72mm;margin:0 auto;padding:8mm 2mm;color:#000}h1,h2{text-align:center;margin:4px 0}hr{border:0;border-top:1px dashed #000}.item{margin:7px 0}.detail{display:block;font-size:12px;margin:2px 0 8px 18px}.total{font-size:18px;font-weight:bold;text-align:right}@media print{button{display:none}}</style></head><body><h1>Deus Proveu Espetinhos</h1><h2>PEDIDO ATUALIZADO</h2><p>${new Date().toLocaleString("pt-BR")}</p><hr><b>Mesa/Cliente: ${customer}</b><hr>${changes.map((change)=>`<div class="item">${change.qty}x ${change.name} — ${change.type}</div>${change.notes?`<span class="detail">${change.notes}</span>`:""}`).join("")}${newTotal!==undefined?`<hr><p class="total">NOVO TOTAL R$ ${newTotal.toFixed(2)}</p>`:""}<script>window.onload=()=>{window.print();setTimeout(()=>window.close(),500)}</script></body></html>`;
+  const removed=changes.filter((c)=>c.type==="removido");
+  const added=changes.filter((c)=>c.type==="adicionado");
+  const list=(items:OrderChange[])=>items.map((c)=>`<div class="item">${c.qty}x ${c.name}</div>${c.notes?`<span class="detail">&gt;&gt; ${c.notes}</span>`:""}`).join("");
+  const section=(title:string,items:OrderChange[])=>items.length?`<h3 class="sec">${title}</h3>${list(items)}`:"";
+  return `<!doctype html><html><head><meta charset="utf-8"><title>ATUALIZAÇÃO</title><style>body{font:14px monospace;width:72mm;margin:0 auto;padding:8mm 2mm;color:#000}h1,h2,h3{text-align:center;margin:4px 0}h3.sec{text-align:left;margin:10px 0 4px;border-bottom:1px dashed #000;padding-bottom:2px;font-size:14px}hr{border:0;border-top:1px dashed #000}.item{margin:5px 0}.detail{display:block;font-size:12px;margin:2px 0 6px 12px}.total{font-size:18px;font-weight:bold;text-align:right}@media print{button{display:none}}</style></head><body><h1>Deus Proveu Espetinhos</h1><h2>PEDIDO ATUALIZADO</h2><p>${new Date().toLocaleString("pt-BR")}</p><hr><b>Mesa/Cliente: ${customer}</b>${section("SAIU (removido)",removed)}${section("ENTROU (adicionado)",added)}${newTotal!==undefined?`<hr><p class="total">NOVO TOTAL R$ ${newTotal.toFixed(2)}</p>`:""}<script>window.onload=()=>{window.print();setTimeout(()=>window.close(),500)}</script></body></html>`;
 }
 // Imprime só a MUDANÇA (item adicionado/removido numa comanda já aberta) — continua
 // na mesma via física, sem repetir o pedido inteiro.

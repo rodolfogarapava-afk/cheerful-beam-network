@@ -220,16 +220,40 @@ function buildOrderUpdateEscPos({
   const b = new EscPosBuilder();
   b.init();
 
+  b.align('center');
+  b.bold(true);
+  b.doubleSize(true);
+  b.line('PEDIDO ATUALIZADO');
+  b.doubleSize(false);
+  b.bold(false);
+  const now = new Date();
+  b.line(`${now.toLocaleDateString('pt-BR')} ${now.toLocaleTimeString('pt-BR')}`);
+  b.divider();
+
   b.align('left');
   b.bold(true);
-  b.line('Pedido Atualizado');
-  b.bold(false);
   b.line(`Mesa: ${customer}`);
-  b.line('');
-  for (const change of changes) {
-    b.line(`${change.qty}x ${change.name} ${change.type} (${change.qty}x)`);
-    if (change.notes) b.line(`   >> ${change.notes}`);
-  }
+  b.bold(false);
+
+  const removed = changes.filter((c) => c.type === 'removido');
+  const added = changes.filter((c) => c.type === 'adicionado');
+
+  const renderGroup = (title: string, list: OrderChange[]) => {
+    if (!list.length) return;
+    b.line('');
+    b.bold(true);
+    b.line(title);
+    b.bold(false);
+    b.line('-'.repeat(PAPER_WIDTH_CHARS));
+    for (const change of list) {
+      b.line(`${change.qty}x ${change.name}`);
+      if (change.notes) b.line(`   >> ${change.notes}`);
+    }
+  };
+
+  renderGroup('SAIU (removido)', removed);
+  renderGroup('ENTROU (adicionado)', added);
+
   if (newTotal !== undefined) {
     b.line('');
     b.bold(true);
