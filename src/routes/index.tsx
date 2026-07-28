@@ -65,7 +65,7 @@ function Landing() {
             Cardápio digital, comandas por mesa, estoque, caixa e relatórios — tudo em uma tela. Sem instalação, funciona no celular e no PC.
           </p>
           <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-            <Link to="/auth" search={{ mode: "signup" as const }} style={{ padding: "14px 28px", background: "#FFC107", color: "#000", borderRadius: 10, textDecoration: "none", fontWeight: 800, fontSize: 16 }}>
+            <Link to="/auth" style={{ padding: "14px 28px", background: "#FFC107", color: "#000", borderRadius: 10, textDecoration: "none", fontWeight: 800, fontSize: 16 }}>
               Criar minha loja grátis (7 dias)
             </Link>
             <Link to="/auth" style={{ padding: "14px 28px", background: "transparent", color: "#fff", border: "2px solid #333", borderRadius: 10, textDecoration: "none", fontWeight: 700, fontSize: 16 }}>
