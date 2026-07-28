@@ -54,16 +54,13 @@ type Product = {
   trackStock?: boolean;
 };
 
-const stockFallbackImages:Record<string,string>={
-  Espetinhos:"https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&w=600&q=82",
-  Acompanhamentos:"https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=600&q=82",
-  Bebidas:"https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=600&q=82",
-};
+// Tiny inline SVG data-URI fallback (no network hit)
+const FALLBACK_IMG="data:image/svg+xml;utf8,"+encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><rect width='120' height='120' fill='%231a1a1a'/><text x='60' y='66' font-family='Arial' font-size='42' text-anchor='middle' fill='%23f5c518'>🍢</text></svg>`);
 
-function ProductImage({product,className=""}:{product:Product;className?:string}){
-  const fallback=stockFallbackImages[product.category]||stockFallbackImages.Entradas;
-  return <img className={className} src={product.image?.trim()||fallback} alt={product.name} loading="eager" decoding="async" fetchPriority="high" width={600} height={600} onError={(event)=>{const image=event.currentTarget;if(image.src!==fallback)image.src=fallback}}/>;
-}
+const ProductImage=React.memo(function ProductImage({product,className="",priority=false}:{product:Product;className?:string;priority?:boolean}){
+  const src=product.image?.trim()||FALLBACK_IMG;
+  return <img className={className} src={src} alt={product.name} loading={priority?"eager":"lazy"} decoding="async" fetchPriority={priority?"high":"low"} width={600} height={600} onError={(event)=>{const image=event.currentTarget;if(image.src!==FALLBACK_IMG)image.src=FALLBACK_IMG}}/>;
+});
 
 const initialProducts: Product[] = [
   { id: 9,  category: "Espetinhos", name: "Carne",             price: 10, image: "/products/generated/espeto-carne.webp",        description: "Espetinho de carne preparado na brasa e servido no ponto escolhido.", stock: 30, minStock: 8, trackStock: true },
