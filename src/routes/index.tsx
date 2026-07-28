@@ -62,6 +62,16 @@ const ProductImage=memo(function ProductImage({product,className="",priority=fal
   return <img className={className} src={src} alt={product.name} loading={priority?"eager":"lazy"} decoding="async" fetchPriority={priority?"high":"low"} width={600} height={600} onError={(event)=>{const image=event.currentTarget;if(image.src!==FALLBACK_IMG)image.src=FALLBACK_IMG}}/>;
 });
 
+function useDebouncedStorage<T>(key:string,value:T,ready:boolean,delay=400){
+  const first=useRef(true);
+  useEffect(()=>{
+    if(!ready)return;
+    if(first.current){first.current=false;return;}
+    const t=setTimeout(()=>{try{window.localStorage.setItem(key,JSON.stringify(value))}catch{}},delay);
+    return()=>clearTimeout(t);
+  },[key,value,ready,delay]);
+}
+
 const initialProducts: Product[] = [
   { id: 9,  category: "Espetinhos", name: "Carne",             price: 10, image: "/products/generated/espeto-carne.webp",        description: "Espetinho de carne preparado na brasa e servido no ponto escolhido.", stock: 30, minStock: 8, trackStock: true },
   { id: 12, category: "Espetinhos", name: "Linguiça",          price: 10, image: "/products/generated/espeto-linguica.webp",     description: "Espetinho de linguiça assada na brasa, dourada e suculenta.",         stock: 30, minStock: 8, trackStock: true },
