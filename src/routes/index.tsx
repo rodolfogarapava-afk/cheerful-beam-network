@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import {
-  Bell,
+  
   BarChart3,
   Banknote,
   Check,
@@ -108,7 +108,7 @@ function Home() {
   const [categories, setCategories] = useState<string[]>(nav.map((item) => item.label));
   const [activeMain, setActiveMain] = useState("Espetinhos");
   const [cart, setCart] = useState<Record<number, number>>({});
-  const [modal, setModal] = useState<"waiter" | "review" | "cart" | "about" | "commands" | "payment" | "doneness" | null>(null);
+  const [modal, setModal] = useState<"review" | "cart" | "about" | "commands" | "payment" | "doneness" | null>(null);
   const [pendingMeatId, setPendingMeatId] = useState<number | null>(null);
   const [doneness, setDoneness] = useState("");
   const [meatNote, setMeatNote] = useState("");
@@ -296,9 +296,6 @@ function Home() {
             <ShoppingBag size={18} /><span>COMANDAS</span>
             {!!savedCommands.length && <b className="command-count">{savedCommands.length}</b>}
           </button>
-          <button className="action waiter" onClick={() => { setSent(false); setModal("waiter"); }}>
-            <Bell size={19} /><span>CHAMAR<br />GARÇOM</span>
-          </button>
           <button className="action cart-button" onClick={() => setModal("cart")}>
             <ShoppingBag size={19} />
             <span>CARRINHO<br />DE COMPRAS</span>
@@ -418,16 +415,6 @@ function Home() {
         <div className="modal-backdrop" onMouseDown={() => { if(modal==="payment")cancelPayment();else setModal(null); }}>
           <section className="modal" onMouseDown={(e) => e.stopPropagation()}>
             <button className="modal-close" onClick={() => { if(modal==="payment")cancelPayment();else setModal(null); }} aria-label="Fechar"><X /></button>
-            {modal === "waiter" && (
-              sent ? <Success title="Garçom chamado!" text="Em instantes alguém da nossa equipe estará na mesa 35." /> :
-              <>
-                <span className="modal-icon"><Bell /></span>
-                <h3>Chamar garçom</h3>
-                <p>Precisa de ajuda? Enviaremos uma notificação para a equipe atender a mesa 35.</p>
-                <button className="primary" onClick={() => { playNotificationSound("alert"); setSent(true); }}>SIM, CHAMAR GARÇOM</button>
-                <button className="secondary" onClick={() => setModal(null)}>AGORA NÃO</button>
-              </>
-            )}
             {modal === "review" && (
               sent ? <Success title="Avaliação enviada!" text="Obrigado por compartilhar sua experiência com a gente." /> :
               <>
