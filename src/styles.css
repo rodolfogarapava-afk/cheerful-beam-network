@@ -406,8 +406,10 @@ button { cursor:pointer;touch-action:manipulation; }
   .category-manager-head button{justify-content:center}
   .form-row{grid-template-columns:1fr}
   .quick-products{grid-template-columns:1fr}
-  .edit-quick-products{grid-template-columns:1fr}
-  .edit-quick-products button{min-height:72px}
+  .edit-quick-products{grid-template-columns:1fr 1fr;gap:8px}
+  .edit-quick-products button{min-height:68px;padding:10px}
+  .edit-quick-products b{font-size:11px}
+  .edit-quick-products small{font-size:11px}
   .pdv-sidebar nav button:nth-child(n+6){display:none}
 }
 
