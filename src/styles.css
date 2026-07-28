@@ -219,7 +219,7 @@ button { cursor:pointer;touch-action:manipulation; }
 .modal textarea { width:100%;height:90px;resize:none;border-radius:9px;border:1px solid #ffffff1f;background:#15171c;color:white;padding:12px;outline:none; }
 .success-icon { background:#38c87720;color:#38c877; }
 .cart-lines { display:grid;gap:14px;text-align:left;margin:22px 0; }.cart-line { display:flex;justify-content:space-between;gap:20px;padding-bottom:13px;border-bottom:1px solid #ffffff12;font-size:13px; }.cart-line div { display:flex;gap:8px; }.cart-line div b { color:var(--yellow); }.cart-total { display:flex;justify-content:space-between;font-size:18px;margin-top:18px; }.cart-total strong { color:var(--yellow); }
-.cart-line span small{display:block;color:#92969f;font-size:10px;margin-top:4px}.doneness-options{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:20px 0}.doneness-options button{min-height:48px;border:1px solid #ffffff20;border-radius:9px;background:#15171c;color:#ddd;font-size:11px;font-weight:700}.doneness-options button.active{border-color:var(--yellow);background:#ffc90012;color:var(--yellow)}.meat-note{display:block;text-align:left;color:#a5a8b0;font-size:11px;font-weight:700}.meat-note textarea{margin-top:7px}.doneness-actions{display:grid;grid-template-columns:1fr 1.25fr;gap:8px;margin-top:12px}.doneness-actions button{min-height:46px;border-radius:9px;font-size:10px;font-weight:800}.doneness-actions .secondary{border:1px solid #ffffff20;background:#15171c;color:#ddd}.doneness-actions .primary{margin:0}
+.cart-line span small{display:block;color:#92969f;font-size:10px;margin-top:4px}.cart-line-actions{display:flex;align-items:center;gap:10px}.add-product-heading{font-size:15px;margin-top:22px}.doneness-options{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:20px 0}.doneness-options button{min-height:48px;border:1px solid #ffffff20;border-radius:9px;background:#15171c;color:#ddd;font-size:11px;font-weight:700}.doneness-options button.active{border-color:var(--yellow);background:#ffc90012;color:var(--yellow)}.meat-note{display:block;text-align:left;color:#a5a8b0;font-size:11px;font-weight:700}.meat-note textarea{margin-top:7px}.doneness-actions{display:grid;grid-template-columns:1fr 1.25fr;gap:8px;margin-top:12px}.doneness-actions button{min-height:46px;border-radius:9px;font-size:10px;font-weight:800}.doneness-actions .secondary{border:1px solid #ffffff20;background:#15171c;color:#ddd}.doneness-actions .primary{margin:0}
 .command-products span small{display:block;color:#858994;font-size:8px;margin-top:3px}
 .confirmation-actions{display:grid;grid-template-columns:1fr 1.2fr;gap:8px;margin-top:20px}.confirmation-actions button{min-height:46px;border-radius:9px;border:1px solid #ffffff20;background:#15171c;color:#ddd;font-size:10px;font-weight:800}.confirmation-actions .primary{margin:0;background:var(--yellow);border-color:var(--yellow);color:#151515}.confirmation-actions .danger-confirm{background:#e44842;border-color:#e44842;color:#fff}
 .customer-field{display:block;text-align:left;color:#999da6;font-size:10px;font-weight:700;margin-top:16px}.customer-field input{width:100%;margin-top:7px;background:#13151a;border:1px solid #ffffff18;color:#fff;border-radius:8px;padding:11px;outline:none}.cart-actions{display:grid;grid-template-columns:1fr 1.25fr;gap:8px;margin-top:14px}.cart-actions>button{border:1px solid #ffffff18;background:#292c33;color:#eee;border-radius:8px;font-size:10px;font-weight:800}.cart-actions .primary{margin:0}.cart-actions button:disabled{opacity:.35}
@@ -373,6 +373,24 @@ button { cursor:pointer;touch-action:manipulation; }
   .products-admin details>div{grid-template-columns:minmax(0,1fr) auto}
   .products-admin details>div i{grid-column:1/-1}
   .bars>div{grid-template-columns:82px minmax(80px,1fr) 34px;gap:7px}
+  .edit-command-modal{width:96vw;max-height:92vh;padding:18px 12px 14px;border-radius:14px;display:flex;flex-direction:column;overflow:hidden}
+  .edit-command-modal h3{font-size:18px;margin-bottom:12px}
+  .edit-command-modal .cart-lines{max-height:130px;gap:8px;margin:0 0 14px}
+  .edit-command-modal .cart-line{flex-direction:column;align-items:flex-start;gap:8px;padding-bottom:8px;font-size:12px}
+  .edit-command-modal .cart-line-actions{width:100%;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}
+  .edit-command-modal .cart-line-actions>strong{font-size:13px;white-space:nowrap}
+  .edit-command-modal .cart-line-actions .stepper{flex:none;width:100%;max-width:150px;margin:0 auto}
+  .edit-command-modal .cart-line-actions .stepper button{width:40px;height:40px}
+  .edit-command-modal .cart-line-actions .stepper b{flex:1;font-size:14px}
+  .edit-command-modal .cart-line-actions>button{width:40px;height:40px;display:grid;place-items:center;border:1px solid #ffffff18;background:#25282f;border-radius:9px;color:#ff7770}
+  .edit-command-modal .add-product-heading{margin:0 0 10px;font-size:13px;flex-shrink:0}
+  .edit-command-modal .pdv-categories{scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;margin-bottom:10px;flex-shrink:0}
+  .edit-command-modal .pdv-categories button{scroll-snap-align:start;min-height:36px;padding:8px 14px;font-size:11px}
+  .edit-command-modal .edit-quick-products{overflow:auto;flex:1;min-height:0;gap:8px;grid-template-columns:1fr 1fr;margin-bottom:10px}
+  .edit-command-modal .edit-quick-products button{min-height:56px;padding:8px}
+  .edit-command-modal .edit-quick-products b{font-size:11px}
+  .edit-command-modal .edit-quick-products small{font-size:10px;margin-top:3px}
+  .edit-command-modal .cart-actions{flex-shrink:0;margin-top:0}
 }
 
 @media (max-width: 400px) {
@@ -394,6 +412,10 @@ button { cursor:pointer;touch-action:manipulation; }
   .category-manager-head button{justify-content:center}
   .form-row{grid-template-columns:1fr}
   .quick-products{grid-template-columns:1fr}
+  .edit-quick-products{grid-template-columns:1fr 1fr;gap:8px}
+  .edit-quick-products button{min-height:68px;padding:10px}
+  .edit-quick-products b{font-size:11px}
+  .edit-quick-products small{font-size:11px}
   .pdv-sidebar nav button:nth-child(n+6){display:none}
 }
 

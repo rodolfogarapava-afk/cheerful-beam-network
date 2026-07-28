@@ -1085,7 +1085,7 @@ function IntegratedCommands({commands,setCommands,onCharge,products,adjustStock}
       <h3>Editar comanda — {editing.name}</h3>
       {editing.items.length?<div className="cart-lines">{editing.items.map((item,index)=><div className="cart-line" key={`${item.name}-${index}`}>
         <div><b>{item.qty}×</b><span>{item.name}{item.detail&&<small>{item.detail}</small>}</span></div>
-        <div style={{display:"flex",alignItems:"center",gap:10}}>
+        <div className="cart-line-actions">
           <strong>R$ {(item.price*item.qty).toFixed(2).replace(".",",")}</strong>
           <div className="stepper">
             <button onClick={()=>changeItemQty(editing,index,-1)} aria-label="Remover um"><Minus/></button>
@@ -1095,7 +1095,7 @@ function IntegratedCommands({commands,setCommands,onCharge,products,adjustStock}
           <button onClick={()=>removeItem(editing,index)} aria-label={`Remover ${item.name}`}><X size={15}/></button>
         </div>
       </div>)}</div>:<p className="empty">Todos os itens foram removidos desta comanda.</p>}
-      <h3 style={{fontSize:15,marginTop:22}}>Adicionar produto</h3>
+      <h3 className="add-product-heading">Adicionar produto</h3>
       <div className="pdv-categories">{editCategories.map((category)=><button key={category} className={editCategory===category?"active":""} onClick={()=>setEditCategory(category)}>{category}</button>)}</div>
       <div className="quick-products edit-quick-products">{products.filter((product)=>product.category===editCategory).map((product)=><button key={product.id} onClick={()=>setPendingProduct({command:editing!,product})}><b>{product.name}</b><small>R$ {product.price.toFixed(2).replace(".",",")}</small></button>)}</div>
       <div className="cart-actions">
