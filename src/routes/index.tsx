@@ -1034,7 +1034,6 @@ function IntegratedCommands({commands,setCommands,onCharge,products,adjustStock}
   },[commands,editing]);
   useEffect(()=>{
     setPendingChanges([]);
-    setLastPrinted(null);
   },[editing?.id]);
   const applyEdit=(command:IntegratedCommand,nextItems:IntegratedCommand["items"],change:OrderChange)=>{
     const nextCommand={...command,items:nextItems,count:nextItems.reduce((sum,item)=>sum+item.qty,0),total:nextItems.reduce((sum,item)=>sum+item.qty*item.price,0)};
