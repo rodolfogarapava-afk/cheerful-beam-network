@@ -263,9 +263,9 @@ function Home() {
         <button className="mobile-menu" onClick={() => setMenuOpen(true)} aria-label="Abrir menu">
           <Menu size={22} />
         </button>
-        <div className="brand" aria-label="Burguer House">
+        <div className="brand" aria-label="Deus Proveu Espetinhos">
           <span className="brand-mark"><Utensils size={24} /></span>
-          <span><b>BURGUER</b><small>HOUSE</small></span>
+          <span><b>DEUS PROVEU</b><small>ESPETINHOS</small></span>
         </div>
         <div className={`search-box ${searchOpen ? "open" : ""}`}>
           <Search size={18} />
