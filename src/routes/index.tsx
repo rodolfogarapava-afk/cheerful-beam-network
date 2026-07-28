@@ -57,7 +57,7 @@ type Product = {
 // Tiny inline SVG data-URI fallback (no network hit)
 const FALLBACK_IMG="data:image/svg+xml;utf8,"+encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><rect width='120' height='120' fill='%231a1a1a'/><text x='60' y='66' font-family='Arial' font-size='42' text-anchor='middle' fill='%23f5c518'>🍢</text></svg>`);
 
-const ProductImage=React.memo(function ProductImage({product,className="",priority=false}:{product:Product;className?:string;priority?:boolean}){
+const ProductImage=memo(function ProductImage({product,className="",priority=false}:{product:Product;className?:string;priority?:boolean}){
   const src=product.image?.trim()||FALLBACK_IMG;
   return <img className={className} src={src} alt={product.name} loading={priority?"eager":"lazy"} decoding="async" fetchPriority={priority?"high":"low"} width={600} height={600} onError={(event)=>{const image=event.currentTarget;if(image.src!==FALLBACK_IMG)image.src=FALLBACK_IMG}}/>;
 });
