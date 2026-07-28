@@ -542,6 +542,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      seed_store_catalog: { Args: { _store_id: string }; Returns: undefined }
     }
     Enums: {
       app_role: "super_admin" | "store_owner"
