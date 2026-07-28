@@ -118,7 +118,7 @@ function Home() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [stars, setStars] = useState(0);
   const [sent, setSent] = useState(false);
-  const [customerName, setCustomerName] = useState("Mesa 35");
+  const [customerName, setCustomerName] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("PIX");
   const [cashReceived, setCashReceived] = useState("");
   const [paymentTotal, setPaymentTotal] = useState(0);
@@ -467,8 +467,8 @@ function Home() {
                         </div>;
                       })}
                     </div>
-                    <label className="customer-field">Nome / Mesa
-                      <input value={customerName} onChange={(e) => setCustomerName(e.target.value)} placeholder="Ex.: Mesa 5" />
+                    <label className="customer-field">Mesa
+                      <input value={customerName} onChange={(e) => setCustomerName(e.target.value)} placeholder="35" inputMode="numeric" />
                     </label>
                     <div className="cart-total"><span>Total</span><strong>R$ {total.toFixed(2).replace(".", ",")}</strong></div>
                     <div className="cart-actions">
@@ -640,7 +640,7 @@ function PdvPanel({ menuProducts, onClose }: { menuProducts: Product[]; onClose:
             <button key={p.id} onClick={() => addToBasket(p)}><span>{foodEmoji(p.name, p.category)}</span><b>{p.name}</b><small>R$ {p.price.toFixed(2).replace(".", ",")}</small></button>)}</div>
         </section>
         <aside className="order-builder">
-          <label>Nome / Mesa<input value={customer} onChange={(e) => setCustomer(e.target.value)} placeholder="Ex.: Mesa 5" /></label>
+          <label>Mesa<input value={customer} onChange={(e) => setCustomer(e.target.value)} placeholder="35" inputMode="numeric" /></label>
           <div className="builder-items">{basket.map((item) => <div className="builder-item" key={item.product.id}>
             <div><b>{item.product.name}</b><small>R$ {(item.product.price * item.qty).toFixed(2).replace(".", ",")}</small></div>
             <div className="mini-step"><button onClick={() => updateQty(item.product.id,-1)}><Minus /></button><span>{item.qty}</span><button onClick={() => updateQty(item.product.id,1)}><Plus /></button></div>
