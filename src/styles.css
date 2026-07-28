@@ -373,6 +373,16 @@ button { cursor:pointer;touch-action:manipulation; }
   .products-admin details>div{grid-template-columns:minmax(0,1fr) auto}
   .products-admin details>div i{grid-column:1/-1}
   .bars>div{grid-template-columns:82px minmax(80px,1fr) 34px;gap:7px}
+  .edit-command-modal{padding:22px 14px}
+  .edit-command-modal .cart-lines{max-height:160px;gap:10px}
+  .edit-command-modal .cart-line{flex-direction:column;align-items:flex-start;gap:10px;padding-bottom:10px}
+  .edit-command-modal .cart-line-actions{width:100%;justify-content:space-between}
+  .edit-command-modal .cart-line-actions .stepper{flex:1;max-width:140px}
+  .edit-command-modal .cart-line-actions .stepper button{width:40px;height:40px}
+  .edit-command-modal .cart-line-actions .stepper b{flex:1;font-size:15px}
+  .edit-command-modal .cart-line-actions>button{width:40px;height:40px;display:grid;place-items:center}
+  .edit-command-modal .add-product-heading{margin-top:16px;font-size:14px}
+  .edit-command-modal .pdv-categories button{min-height:42px;padding:10px 16px;font-size:12px}
 }
 
 @media (max-width: 400px) {
