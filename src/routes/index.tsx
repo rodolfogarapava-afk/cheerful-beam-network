@@ -1047,11 +1047,10 @@ function IntegratedCommands({commands,setCommands,onCharge,products,adjustStock}
     });
   };
   const sendPendingChanges=()=>{
-    if(!editing)return;
-    const changes=pendingChanges.length?pendingChanges:lastPrinted;
-    if(!changes||!changes.length)return;
-    printOrderChange(editing.name,changes,editing.total);
-    if(pendingChanges.length){setLastPrinted(pendingChanges);setPendingChanges([])}
+    if(!editing||!pendingChanges.length)return;
+    printOrderChange(editing.name,pendingChanges,editing.total);
+    setLastPrinted(pendingChanges);
+    setPendingChanges([]);
   };
   const changeItemQty=(command:IntegratedCommand,index:number,delta:number)=>{
     const item=command.items[index];
@@ -1069,12 +1068,16 @@ function IntegratedCommands({commands,setCommands,onCharge,products,adjustStock}
     adjustStock([{name:item.name,qty:item.qty}]);
     applyEdit(command,command.items.filter((_,i)=>i!==index),{type:"removido",name:item.name,qty:item.qty,notes:item.detail});
   };
-  const addProductToCommand=(command:IntegratedCommand,product:Product)=>{
+  const addProductToCommand=(command:IntegratedCommand,product:Product,detail=""):void=>{
     if(product.trackStock&&Number(product.stock||0)<=0)return;
-    const existingIndex=command.items.findIndex((item)=>item.name===product.name&&!item.detail);
-    const nextItems=existingIndex>=0?command.items.map((item,i)=>i===existingIndex?{...item,qty:item.qty+1}:item):[...command.items,{name:product.name,qty:1,price:product.price,detail:"",delivered:false}];
+    const existingIndex=command.items.findIndex((item)=>item.name===product.name&&(item.detail||"")===detail);
+    const nextItems=existingIndex>=0?command.items.map((item,i)=>i===existingIndex?{...item,qty:item.qty+1}:item):[...command.items,{name:product.name,qty:1,price:product.price,detail,delivered:false}];
     adjustStock([{name:product.name,qty:-1}]);
-    applyEdit(command,nextItems,{type:"adicionado",name:product.name,qty:1});
+    applyEdit(command,nextItems,{type:"adicionado",name:product.name,qty:1,notes:detail||undefined});
+  };
+  const openAddProduct=(command:IntegratedCommand,product:Product)=>{
+    if(product.category==="Espetinhos"){setEditDoneness("");setEditMeatNote("");setPendingEditMeat({command,product});return}
+    setPendingProduct({command,product});
   };
   return <div className="integrated-view">
     <div className="integrated-heading"><div><p>OPERAÇÃO · TEMPO REAL</p><h1>Comandas abertas</h1><span>Acompanhe preparo, entrega, impressão e cobrança sem sair do cardápio.</span></div><b>{commands.length} abertas</b></div>
