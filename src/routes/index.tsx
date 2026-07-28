@@ -14,7 +14,7 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { sendOrderTicketToPrinter, type OrderChange } from "@/lib/printReceipt";
+import { sendOrderTicketToPrinter } from "@/lib/printReceipt";
 import { initAudioContext, playNotificationSound } from "@/lib/sounds";
 
 export const Route = createFileRoute("/")({
