@@ -339,9 +339,6 @@ function Home() {
             </button>
           </div>
           <div className="side-bottom">
-            <button onClick={() => { setSent(false); setModal("review"); }}>
-              <MessageSquareHeart size={19} /> AVALIE
-            </button>
             <button className="about" onClick={() => { setModal("about"); setMenuOpen(false); }}><Info size={17} /> Sobre</button>
           </div>
         </aside>
