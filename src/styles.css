@@ -404,6 +404,8 @@ button { cursor:pointer;touch-action:manipulation; }
   .category-manager-head button{justify-content:center}
   .form-row{grid-template-columns:1fr}
   .quick-products{grid-template-columns:1fr}
+  .edit-quick-products{grid-template-columns:1fr}
+  .edit-quick-products button{min-height:72px}
   .pdv-sidebar nav button:nth-child(n+6){display:none}
 }
 
