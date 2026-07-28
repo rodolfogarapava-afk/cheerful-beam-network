@@ -1024,7 +1024,7 @@ function IntegratedCommands({commands,setCommands,onCharge,products,adjustStock}
     setConfirmation(null);
   };
   const [pendingChanges,setPendingChanges]=useState<OrderChange[]>([]);
-  const [lastPrinted,setLastPrinted]=useState<OrderChange[]|null>(null);
+  const [, setLastPrinted]=useState<OrderChange[]|null>(null);
   const [pendingProduct,setPendingProduct]=useState<{command:IntegratedCommand;product:Product}|null>(null);
   const [pendingEditMeat,setPendingEditMeat]=useState<{command:IntegratedCommand;product:Product}|null>(null);
   const [editDoneness,setEditDoneness]=useState("");
