@@ -1096,7 +1096,7 @@ function IntegratedCommands({commands,setCommands,onCharge,products,adjustStock}
       </div>)}</div>:<p className="empty">Todos os itens foram removidos desta comanda.</p>}
       <h3 style={{fontSize:15,marginTop:22}}>Adicionar produto</h3>
       <div className="pdv-categories">{editCategories.map((category)=><button key={category} className={editCategory===category?"active":""} onClick={()=>setEditCategory(category)}>{category}</button>)}</div>
-      <div className="quick-products">{products.filter((product)=>product.category===editCategory).map((product)=><button key={product.id} onClick={()=>addProductToCommand(editing,product)}><span>{foodEmoji(product.name,product.category)}</span><b>{product.name}</b><small>R$ {product.price.toFixed(2).replace(".",",")}</small></button>)}</div>
+      <div className="quick-products edit-quick-products">{products.filter((product)=>product.category===editCategory).map((product)=><button key={product.id} onClick={()=>addProductToCommand(editing,product)}><b>{product.name}</b><small>R$ {product.price.toFixed(2).replace(".",",")}</small></button>)}</div>
       <div className="cart-actions">
         <button onClick={()=>setEditing(null)}>FECHAR</button>
         <button className="primary" disabled={!pendingChanges.length&&!lastPrinted} onClick={sendPendingChanges}>
