@@ -1105,6 +1105,13 @@ function IntegratedCommands({commands,setCommands,onCharge,products,adjustStock}
         </button>
       </div>
     </section></div>}
+    {pendingProduct&&<div className="modal-backdrop" onMouseDown={()=>setPendingProduct(null)}><section className="modal confirmation-modal" onMouseDown={(event)=>event.stopPropagation()}>
+      <button className="modal-close" onClick={()=>setPendingProduct(null)} aria-label="Fechar"><X/></button>
+      <span className="modal-icon"><ShoppingBag/></span>
+      <h3>Adicionar produto</h3>
+      <p>Você tem certeza que quer adicionar <b>{pendingProduct.product.name}</b> na comanda <b>{pendingProduct.command.name}</b>?</p>
+      <div className="confirmation-actions"><button onClick={()=>setPendingProduct(null)}>VOLTAR</button><button className="primary" onClick={()=>{addProductToCommand(pendingProduct.command,pendingProduct.product);setPendingProduct(null)}}>SIM, ADICIONAR</button></div>
+    </section></div>}
   </div>
 }
 
