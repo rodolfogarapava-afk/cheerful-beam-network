@@ -373,18 +373,24 @@ button { cursor:pointer;touch-action:manipulation; }
   .products-admin details>div{grid-template-columns:minmax(0,1fr) auto}
   .products-admin details>div i{grid-column:1/-1}
   .bars>div{grid-template-columns:82px minmax(80px,1fr) 34px;gap:7px}
-  .edit-command-modal{width:96vw;padding:20px 12px;border-radius:14px}
-  .edit-command-modal .cart-lines{max-height:160px;gap:10px}
-  .edit-command-modal .cart-line{flex-direction:column;align-items:flex-start;gap:10px;padding-bottom:10px}
+  .edit-command-modal{width:96vw;max-height:92vh;padding:18px 12px 14px;border-radius:14px;display:flex;flex-direction:column;overflow:hidden}
+  .edit-command-modal h3{font-size:18px;margin-bottom:12px}
+  .edit-command-modal .cart-lines{max-height:130px;gap:8px;margin:0 0 14px}
+  .edit-command-modal .cart-line{flex-direction:column;align-items:flex-start;gap:8px;padding-bottom:8px;font-size:12px}
   .edit-command-modal .cart-line-actions{width:100%;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}
   .edit-command-modal .cart-line-actions>strong{font-size:13px;white-space:nowrap}
   .edit-command-modal .cart-line-actions .stepper{flex:none;width:100%;max-width:150px;margin:0 auto}
-  .edit-command-modal .cart-line-actions .stepper button{width:42px;height:42px}
-  .edit-command-modal .cart-line-actions .stepper b{flex:1;font-size:15px}
-  .edit-command-modal .cart-line-actions>button{width:42px;height:42px;display:grid;place-items:center;border:1px solid #ffffff18;background:#25282f;border-radius:9px;color:#ff7770}
-  .edit-command-modal .add-product-heading{margin-top:16px;font-size:14px}
-  .edit-command-modal .pdv-categories{scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
-  .edit-command-modal .pdv-categories button{scroll-snap-align:start;min-height:42px;padding:10px 16px;font-size:12px}
+  .edit-command-modal .cart-line-actions .stepper button{width:40px;height:40px}
+  .edit-command-modal .cart-line-actions .stepper b{flex:1;font-size:14px}
+  .edit-command-modal .cart-line-actions>button{width:40px;height:40px;display:grid;place-items:center;border:1px solid #ffffff18;background:#25282f;border-radius:9px;color:#ff7770}
+  .edit-command-modal .add-product-heading{margin:0 0 10px;font-size:13px;flex-shrink:0}
+  .edit-command-modal .pdv-categories{scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;margin-bottom:10px;flex-shrink:0}
+  .edit-command-modal .pdv-categories button{scroll-snap-align:start;min-height:36px;padding:8px 14px;font-size:11px}
+  .edit-command-modal .edit-quick-products{overflow:auto;flex:1;min-height:0;gap:8px;grid-template-columns:1fr 1fr;margin-bottom:10px}
+  .edit-command-modal .edit-quick-products button{min-height:56px;padding:8px}
+  .edit-command-modal .edit-quick-products b{font-size:11px}
+  .edit-command-modal .edit-quick-products small{font-size:10px;margin-top:3px}
+  .edit-command-modal .cart-actions{flex-shrink:0;margin-top:0}
 }
 
 @media (max-width: 400px) {
