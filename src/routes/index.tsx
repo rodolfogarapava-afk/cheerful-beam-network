@@ -1016,6 +1016,7 @@ function IntegratedCommands({commands,setCommands,onCharge,products,adjustStock}
   };
   const [pendingChanges,setPendingChanges]=useState<OrderChange[]>([]);
   const [lastPrinted,setLastPrinted]=useState<OrderChange[]|null>(null);
+  const [pendingProduct,setPendingProduct]=useState<{command:IntegratedCommand;product:Product}|null>(null);
   useEffect(()=>{
     if(editing&&!commands.some((command)=>command.id===editing.id))setEditing(null);
   },[commands,editing]);
@@ -1096,13 +1097,20 @@ function IntegratedCommands({commands,setCommands,onCharge,products,adjustStock}
       </div>)}</div>:<p className="empty">Todos os itens foram removidos desta comanda.</p>}
       <h3 style={{fontSize:15,marginTop:22}}>Adicionar produto</h3>
       <div className="pdv-categories">{editCategories.map((category)=><button key={category} className={editCategory===category?"active":""} onClick={()=>setEditCategory(category)}>{category}</button>)}</div>
-      <div className="quick-products edit-quick-products">{products.filter((product)=>product.category===editCategory).map((product)=><button key={product.id} onClick={()=>addProductToCommand(editing,product)}><b>{product.name}</b><small>R$ {product.price.toFixed(2).replace(".",",")}</small></button>)}</div>
+      <div className="quick-products edit-quick-products">{products.filter((product)=>product.category===editCategory).map((product)=><button key={product.id} onClick={()=>setPendingProduct({command:editing!,product})}><b>{product.name}</b><small>R$ {product.price.toFixed(2).replace(".",",")}</small></button>)}</div>
       <div className="cart-actions">
         <button onClick={()=>setEditing(null)}>FECHAR</button>
         <button className="primary" disabled={!pendingChanges.length&&!lastPrinted} onClick={sendPendingChanges}>
           {pendingChanges.length?`IMPRIMIR ALTERAÇÕES (${pendingChanges.length})`:"REIMPRIMIR ALTERAÇÕES"}
         </button>
       </div>
+    </section></div>}
+    {pendingProduct&&<div className="modal-backdrop" onMouseDown={()=>setPendingProduct(null)}><section className="modal confirmation-modal" onMouseDown={(event)=>event.stopPropagation()}>
+      <button className="modal-close" onClick={()=>setPendingProduct(null)} aria-label="Fechar"><X/></button>
+      <span className="modal-icon"><ShoppingBag/></span>
+      <h3>Adicionar produto</h3>
+      <p>Você tem certeza que quer adicionar <b>{pendingProduct.product.name}</b> na comanda <b>{pendingProduct.command.name}</b>?</p>
+      <div className="confirmation-actions"><button onClick={()=>setPendingProduct(null)}>VOLTAR</button><button className="primary" onClick={()=>{addProductToCommand(pendingProduct.command,pendingProduct.product);setPendingProduct(null)}}>SIM, ADICIONAR</button></div>
     </section></div>}
   </div>
 }
