@@ -144,9 +144,9 @@ function Home() {
     } catch {}
     setStorageReady(true);
   }, []);
-  useEffect(()=>{if(storageReady)window.localStorage.setItem("burguer-house-commands",JSON.stringify(savedCommands))},[savedCommands,storageReady]);
-  useEffect(()=>{if(storageReady)window.localStorage.setItem("burguer-house-sales",JSON.stringify(salesHistory))},[salesHistory,storageReady]);
-  useEffect(()=>{if(storageReady)window.localStorage.setItem("burguer-house-expenses",JSON.stringify(expenses))},[expenses,storageReady]);
+  useDebouncedStorage("burguer-house-commands",savedCommands,storageReady);
+  useDebouncedStorage("burguer-house-sales",salesHistory,storageReady);
+  useDebouncedStorage("burguer-house-expenses",expenses,storageReady);
   useEffect(()=>{
     if(!storageReady)return;
     const merged=mergeOpenCommands(savedCommands);
