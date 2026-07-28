@@ -21,7 +21,7 @@ import {
   X,
   ChevronDown,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import { sendOrderTicketToPrinter, sendOrderUpdateToPrinter, sendReceiptToPrinter, type OrderChange } from "@/lib/printReceipt";
 import { generateReportPdf } from "@/lib/reportPdf";
 import { initAudioContext, playNotificationSound } from "@/lib/sounds";
