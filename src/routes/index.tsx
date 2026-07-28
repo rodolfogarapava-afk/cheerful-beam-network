@@ -1048,7 +1048,6 @@ function IntegratedCommands({commands,setCommands,onCharge,products,adjustStock}
   const sendPendingChanges=()=>{
     if(!editing||!pendingChanges.length)return;
     printOrderChange(editing.name,pendingChanges,editing.total);
-    setLastPrinted(pendingChanges);
     setPendingChanges([]);
   };
   const changeItemQty=(command:IntegratedCommand,index:number,delta:number)=>{
