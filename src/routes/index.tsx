@@ -369,11 +369,11 @@ function Home() {
           </div>
 
           <div className="product-list">
-            {filtered.map((product) => (
+            {filtered.map((product, idx) => (
               <article className="product-card" key={product.id}>
                 <div className="photo">
                   {product.tag && <span className="new-badge">{product.tag}</span>}
-                  <ProductImage product={product} />
+                  <ProductImage product={product} priority={idx<4} />
                 </div>
                 <div className="product-info">
                   <div>
