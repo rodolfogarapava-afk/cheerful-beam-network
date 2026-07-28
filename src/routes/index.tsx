@@ -1112,11 +1112,11 @@ function IntegratedCommands({commands,setCommands,onCharge,products,adjustStock}
       </div>)}</div>:<p className="empty">Todos os itens foram removidos desta comanda.</p>}
       <h3 className="add-product-heading">Adicionar produto</h3>
       <div className="pdv-categories">{editCategories.map((category)=><button key={category} className={editCategory===category?"active":""} onClick={()=>setEditCategory(category)}>{category}</button>)}</div>
-      <div className="quick-products edit-quick-products">{products.filter((product)=>product.category===editCategory).map((product)=><button key={product.id} onClick={()=>setPendingProduct({command:editing!,product})}><b>{product.name}</b><small>R$ {product.price.toFixed(2).replace(".",",")}</small></button>)}</div>
+      <div className="quick-products edit-quick-products">{products.filter((product)=>product.category===editCategory).map((product)=><button key={product.id} onClick={()=>openAddProduct(editing!,product)}><b>{product.name}</b><small>R$ {product.price.toFixed(2).replace(".",",")}</small></button>)}</div>
       <div className="cart-actions">
         <button onClick={()=>setEditing(null)}>FECHAR</button>
-        <button className="primary" disabled={!pendingChanges.length&&!lastPrinted} onClick={sendPendingChanges}>
-          {pendingChanges.length?`IMPRIMIR ALTERAÇÕES (${pendingChanges.length})`:"REIMPRIMIR ALTERAÇÕES"}
+        <button className="primary" disabled={!pendingChanges.length} onClick={sendPendingChanges}>
+          {pendingChanges.length?`IMPRIMIR ALTERAÇÕES (${pendingChanges.length})`:"SEM ALTERAÇÕES PENDENTES"}
         </button>
       </div>
     </section></div>}
@@ -1126,6 +1126,29 @@ function IntegratedCommands({commands,setCommands,onCharge,products,adjustStock}
       <h3>Adicionar produto</h3>
       <p>Você tem certeza que quer adicionar <b>{pendingProduct.product.name}</b> na comanda <b>{pendingProduct.command.name}</b>?</p>
       <div className="confirmation-actions"><button onClick={()=>setPendingProduct(null)}>VOLTAR</button><button className="primary" onClick={()=>{addProductToCommand(pendingProduct.command,pendingProduct.product);setPendingProduct(null)}}>SIM, ADICIONAR</button></div>
+    </section></div>}
+    {pendingEditMeat&&<div className="modal-backdrop" onMouseDown={()=>setPendingEditMeat(null)}><section className="modal" onMouseDown={(event)=>event.stopPropagation()}>
+      <button className="modal-close" onClick={()=>setPendingEditMeat(null)} aria-label="Fechar"><X/></button>
+      <span className="modal-icon"><Utensils/></span>
+      <h3>Ponto da carne</h3>
+      <p><b>{pendingEditMeat.product.name}</b> — escolha como deseja o preparo para <b>{pendingEditMeat.command.name}</b>.</p>
+      <div className="doneness-options">
+        {["Mal passada","Ao ponto","Bem passada"].map((point)=>(
+          <button key={point} className={editDoneness===point?"active":""} onClick={()=>setEditDoneness(point)}>{point}</button>
+        ))}
+      </div>
+      <label className="meat-note">Observação (opcional)
+        <textarea value={editMeatNote} onChange={(event)=>setEditMeatNote(event.target.value)} placeholder="Ex.: sem sal, sem farofa..." />
+      </label>
+      <div className="doneness-actions">
+        <button className="secondary" onClick={()=>setEditDoneness("Sem ponto")}>SEM PONTO</button>
+        <button className="primary" disabled={!editDoneness} onClick={()=>{
+          const note=editMeatNote.trim();
+          const detail=[editDoneness&&`Ponto: ${editDoneness}`,note&&`Obs.: ${note}`].filter(Boolean).join(" · ");
+          addProductToCommand(pendingEditMeat.command,pendingEditMeat.product,detail);
+          setPendingEditMeat(null);setEditDoneness("");setEditMeatNote("");
+        }}>ADICIONAR</button>
+      </div>
     </section></div>}
   </div>
 }
