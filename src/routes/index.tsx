@@ -202,7 +202,7 @@ function Home() {
           product.category === activeMain &&
           product.name.toLowerCase().includes(query.toLowerCase()),
       ),
-    [query, activeMain],
+    [query, activeMain, products],
   );
   const currentCartItems = Object.entries(cart).flatMap(([id, qty]) => {
     const product = products.find((item) => item.id === Number(id));
