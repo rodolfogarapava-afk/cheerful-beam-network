@@ -26,7 +26,7 @@ import { sendOrderTicketToPrinter, sendOrderUpdateToPrinter, sendReceiptToPrinte
 import { generateReportPdf } from "@/lib/reportPdf";
 import { initAudioContext, playNotificationSound } from "@/lib/sounds";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_authenticated/app")({
   head: () => ({
     meta: [
       { title: "Burguer House — Cardápio digital" },
