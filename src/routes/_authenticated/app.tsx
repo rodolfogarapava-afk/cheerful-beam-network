@@ -222,7 +222,7 @@ function Home() {
   });
   const sectionCopy: Record<string, { title: string; description: string }> = {
     Espetinhos: {
-      title: "Espetinhos",
+      title: "Espetinhos.",
       description: "Preparados na brasa e servidos no ponto escolhido. Acompanham farofa e mandioca.",
     },
     Acompanhamentos: {
