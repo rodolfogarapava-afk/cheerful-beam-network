@@ -5,9 +5,9 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Entrar — Cardápio SaaS" },
-      { name: "description", content: "Acesse sua loja no Cardápio SaaS ou crie a sua em segundos." },
-      { property: "og:title", content: "Entrar — Cardápio SaaS" },
+      { title: "Entrar — Cardápio" },
+      { name: "description", content: "Acesse sua loja no Cardápio ou crie a sua em segundos." },
+      { property: "og:title", content: "Entrar — Cardápio" },
       { property: "og:description", content: "Acesse ou crie sua conta." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -77,7 +77,7 @@ function AuthPage() {
     <div style={{ minHeight: "100vh", display: "grid", placeItems: "center", background: "linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%)", padding: 16 }}>
       <div style={{ width: "100%", maxWidth: 420, background: "#111", padding: 32, borderRadius: 16, border: "1px solid #222", boxShadow: "0 8px 32px rgba(0,0,0,0.4)" }}>
         <div style={{ textAlign: "center", marginBottom: 24 }}>
-          <Link to="/" style={{ color: "#FFC107", fontWeight: 800, letterSpacing: 1, textDecoration: "none", fontSize: 14 }}>← CARDÁPIO SAAS</Link>
+          <Link to="/" style={{ color: "#FFC107", fontWeight: 800, letterSpacing: 1, textDecoration: "none", fontSize: 14 }}>← Cardápio</Link>
         </div>
         <h1 style={{ color: "#fff", fontSize: 24, fontWeight: 800, marginBottom: 6, textAlign: "center" }}>
           {mode === "login" ? "Entrar na sua loja" : "Criar minha loja"}

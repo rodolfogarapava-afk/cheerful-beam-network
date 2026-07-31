@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
     meta: [
-      { title: "Painel Admin — Cardápio SaaS" },
+      { title: "Painel Admin — Cardápio" },
       { name: "description", content: "Painel do super-administrador: gestão de lojas, assinaturas e pagamentos." },
       { property: "og:title", content: "Painel Admin" },
       { property: "og:description", content: "Gestão das lojas do SaaS." },
