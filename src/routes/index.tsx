@@ -50,7 +50,7 @@ function Landing() {
   return (
     <div style={{ minHeight: "100vh", background: "linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%)", color: "#fff", display: "flex", flexDirection: "column" }}>
       <header style={{ padding: "20px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", maxWidth: 1200, margin: "0 auto", width: "100%" }}>
-        <div style={{ fontWeight: 800, fontSize: 20, letterSpacing: 1, color: "#FFC107" }}>CARDÁPIO SAAS</div>
+        <div style={{ fontWeight: 800, fontSize: 20, letterSpacing: 1, color: "#FFC107" }}>Cardápio</div>
         <Link to="/auth" style={{ padding: "10px 20px", background: "#FFC107", color: "#000", borderRadius: 8, textDecoration: "none", fontWeight: 700 }}>
           Entrar
         </Link>
@@ -89,7 +89,7 @@ function Landing() {
       </main>
 
       <footer style={{ padding: 20, textAlign: "center", color: "#666", fontSize: 13, borderTop: "1px solid #1a1a1a" }}>
-        © {new Date().getFullYear()} Cardápio SaaS
+        © {new Date().getFullYear()} Cardápio
       </footer>
     </div>
   );
