@@ -5,9 +5,9 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Cardápio SaaS — Sistema para restaurantes e espetinhos" },
+      { title: "Cardápio — Sistema para restaurantes e espetinhos" },
       { name: "description", content: "Sistema completo de cardápio digital, comandas, caixa e estoque para o seu restaurante ou barzinho." },
-      { property: "og:title", content: "Cardápio SaaS — Sistema para restaurantes" },
+      { property: "og:title", content: "Cardápio — Sistema para restaurantes" },
       { property: "og:description", content: "Cardápio digital, comandas e controle de caixa em um só lugar." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
